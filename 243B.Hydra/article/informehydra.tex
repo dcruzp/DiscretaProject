@@ -1,0 +1,65 @@
+\documentclass{article}
+
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usetikzlibrary{shapes,snakes}
+
+
+
+\begin{document}
+    \title{B.Hydra} 
+    \author{Daniel de la Cruz Prieto} 
+    \date{\today} 
+    \maketitle
+
+    \begin{flushleft}
+    	Un d\'ia Petya recibi\'o un regalo de cumplea\~nos de su mam\'a, un libro llamado "Leyes y mitos de la Teor\'ia de Grafos". De este libro Petya aprendi\'o acerca de los grafos Hydra.
+    \end{flushleft}
+    
+    \begin{flushleft}
+        Un grafo no dirigido es un Hydra; si este tiene una estructura como la mostrada en la figura de abajo.\\
+        Esta estructura tiene dos nodos $u$ y $v$ conectados por una arista. Estos son el pecho y el estomago de Hydra
+        correspondientemente. El pecho es conectado con h nodos que son la cabeza de Hydra. El est\'omago est\'a conectado con t nodes que son la cola de Hydra.
+    \end{flushleft}
+      
+    \begin{flushleft}
+         Nota que el Hydra es un \'arbol, que tiene $h+t+x$ nodos
+    \end{flushleft}
+    
+    \begin{center}
+        \tikzstyle{stylenode} = [vertex ,fill = black ,scale = 0.5]
+        \begin{tikzpicture}[vertex/.style={draw,circle} ]
+        
+            \node[ stylenode] (1) at (1,6) {} ; 
+            \node[ stylenode] (2) at (1,5) {} ; 
+            \node[ stylenode] (3) at (1,4) {} ; 
+            \node[ stylenode] (4) at (3,5) {} ; 
+
+            \node[ stylenode] (5) at (7,4) {} ; 
+            \node[ stylenode] (6) at (9,5) {} ; 
+            \node[ stylenode] (7) at (9,4) {} ; 
+            \node[ stylenode] (8) at (9,3) {} ; 
+
+
+            \draw [line width = 2] (1) -- (4);
+            \draw [line width = 2] (2) -- (4);
+            \draw [line width = 2] (3) -- (4);
+
+            \draw [line width = 2] (4) -- (5);
+
+            \draw [line width = 2] (5) -- (6);
+            \draw [line width = 2] (5) -- (7);
+            \draw [line width = 2] (5) -- (8);
+
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{flushleft}
+        Tambien, Petya tiene un grafo no dirigido G que consiste de n nodos y m aristas. Petya recibi\'o este como el \'ultimo regalo de cumplea\~nos de su mam\'a. El grafo G no contiene ni multiples aristas ni lazos.
+    \end{flushleft}
+  
+    \begin{flushleft}
+        Ahora Petya quiere encontrar un Hydra en el grafo G o estar segura que el grafo no tiene un Hydra.
+    \end{flushleft}
+\end{document}

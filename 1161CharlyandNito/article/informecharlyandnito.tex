@@ -1,0 +1,112 @@
+\documentclass{article}
+
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usetikzlibrary{shapes,snakes}
+
+
+
+\begin{document}
+    \title{1161 - Charly and Nito} 
+    \author{Daniel de la Cruz Prieto} 
+    \date{\today} 
+    \maketitle
+
+    \section*{Descripcion del Problema } 
+
+    \begin{flushleft}
+    Charly y Nito son amigos y les gusta estar juntos en un lindo bar en 
+    Palermo Hollywood. Aproximadamente a las 3 a.m., comienzan a
+    sentirse somnolientos y quieren irse a casa.
+    Quieren llegar a casa r\'apidamente, por lo que cada uno usa 
+    un camino que minimiza la distancia a su casa. Sin embargo,
+    a Charly y Nito también les gusta caminar juntos mientras 
+    hablan de los "buenos viejos tiempos", por lo que quieren 
+    caminar juntos tanto como sea posible. Charly y Nito viven 
+    en una ciudad que puede modelarse como un conjunto de 
+    calles y cruces. Cada calle conecta un par de cruces 
+    distintos y se puede caminar en ambas direcciones. 
+    No hay dos calles que conecten el mismo par de cruces. 
+    Charly y Nito no viven juntos y no viven en el bar. 
+    Hay al menos un camino desde el bar hasta la casa de Charly; 
+    lo mismo ocurre con la casa de Nito. 
+    Dada la información sobre las calles y cruces de la ciudad, 
+    las ubicaciones del bar, la casa de Charly y la casa de Nito,
+    debes decirle a Charly y Nito la distancia m\'axima que pueden 
+    caminar juntos sin obligarlos a caminar m\'as de la 
+    distancia m\'inima desde el bar. a sus respectivos hogares.
+    Charly y Nito tambi\'en quieren saber cu\'anto caminar\'a 
+    cada uno de ellos solo.
+    \end{flushleft}
+
+    \begin{flushleft}
+        {\bf Especificaci\'on de la entrada }
+    \end{flushleft}
+    
+    \begin{flushleft}
+    La entrada contiene varios casos de prueba, cada uno descrito 
+    en varias l\'ineas. La primera l\'inea de cada caso de prueba
+    contiene cinco enteros {\bf J, B, C, N y S} separados por espacios
+    simples . El valor {\bf J} es el n\'umero de cruces en la ciudad
+    {\bf  (3 $\leq$ J $\leq$ 5000)} , cada uni\'on se identifica con un
+    n\'umero entero entre {\bf 1 y J} . Los valores {\bf B, C y N} son 
+    los identificadores de los cruces donde se encuentran el bar,
+    la casa de Charly y la casa de Nito, respectivamente. {\bf (1 $\leq$ B,C,N $\leq$ J);}
+    estos tres identificadores de uni\'on son diferentes 
+    The value S is the number of streets in the city 
+    {\bf (2 $\leq$ S $\leq$ 150000)} .
+    Cada una de las siguientes {\bf S} l\'ineas  contiene la descripci\'on de una calle. 
+    Cada calle se describe utilizando tres n\'umeros enteros {\bf E1, E2 y L} separados 
+    por espacios simples, donde {\bf E1 y E2} identifican dos cruces distintos que son
+    puntos finales de la calle {\bf (1 $\leq$ E1, E2 $\leq$ J)}, y L es la longitud de 
+    la calle {\bf(1 $\leq$ L $\leq$ $10^4$ )}. Puede suponer que 
+    cada calle tiene un par diferente de puntos finales y 
+    que existen rutas desde el cruce {\bf B} hasta los cruces {\bf C} y {\bf N}. 
+    La \'ultima l\'inea de la entrada contiene 
+    el n\'umero $-1$ cinco veces separados por espacios simples y no debe procesarse como
+    un caso de prueba. La entrada debe leerse desde la entrada est\'andar. 
+    \end{flushleft}
+
+
+    \begin{flushleft}
+        {\bf Especificaciones de la Salida}
+    \end{flushleft}
+
+    \begin{flushleft}
+        Para cada caso de prueba, la salida de una sola l\'inea 
+        con tres enteros {\bf T, C y N } separados por espacios
+        simples, donde {\bf T} es la distancia m\'axima que 
+        Charly y Nito pueden caminar juntos, {\bf C} es la 
+        distancia que Charly camina solo y {\bf N} es la distancia 
+        que Nito camina solo. La salida debe escribirse en salida
+        est\'andar.
+    \end{flushleft}
+    \begin{center}
+        \tikzstyle{stylenode} = [vertex ,fill = black ,scale = 1]
+        \begin{tikzpicture}[vertex/.style={draw,circle} ]
+        
+            \node[ stylenode] (1) at (1,6) {} ; 
+            \node[ stylenode] (2) at (1,5) {} ; 
+            \node[ stylenode] (3) at (1,4) {} ; 
+            \node[ stylenode] (4) at (3,5) {} ; 
+
+            \node[ stylenode] (5) at (7,4) {} ; 
+            \node[ stylenode] (6) at (9,5) {} ; 
+            \node[ stylenode] (7) at (9,4) {} ; 
+            \node[ stylenode] (8) at (9,3) {} ; 
+
+
+            \draw [line width = 2] (1) -- (4);
+            \draw [line width = 2] (2) -- (4);
+            \draw [line width = 2] (3) -- (4);
+
+            \draw [line width = 2] (4) -- (5);
+
+            \draw [line width = 2] (5) -- (6);
+            \draw [line width = 2] (5) -- (7);
+            \draw [line width = 2] (5) -- (8);
+
+        \end{tikzpicture}
+    \end{center}
+\end{document}
