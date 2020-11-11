@@ -50,3 +50,5 @@ if __name__ == '__main__':
         g.addedge(int(borde[:1]), int (borde[1:]))
        
     g.printGraph()
+
+    
