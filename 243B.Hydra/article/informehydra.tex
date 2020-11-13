@@ -9,6 +9,8 @@
 \usepackage{verbatim}
 \usepackage{listings} 
 
+\usepackage[hidelinks]{hyperref} 
+\usepackage{color}
 
 \definecolor {bg} {rgb}{0.95,0.95,0.95}
 
@@ -26,18 +28,23 @@
     \date{\today} 
     \maketitle
 
+    \begin{abstract}
+        \noindent En este art\'iculo se expone la solucion del problema B.Hydra del juez online \href{https://codeforces.com/} { \textcolor{blue}{CodeForce} }  
+        si quiere ir directo al problema \href{https://codeforces.com/problemset/problem/243/B}{\textcolor{blue}{click aqui}} . En el articulo se da una soluci\'on al problema , adem\'as de 
+        demostrar la correctitud del algoritmo y la complejidad temporal del mismo . Al final del articulo se expone el codigo en python de la solucion del prblema   
+    \end{abstract}
+
+    \vspace{1cm}
+    \noindent \textcolor{blue}{\Large \underline{Orden del problema } }
     \begin{flushleft}
-    	Un d\'ia Petya recibi\'o un regalo de cumplea\~nos de su mam\'a, un libro llamado "Leyes y mitos de la Teor\'ia de Grafos". De este libro Petya aprendi\'o acerca de los grafos Hydra.
-    \end{flushleft}
-    
-    \begin{flushleft}
-        Un grafo no dirigido es un Hydra; si este tiene una estructura como la mostrada en la figura de abajo.\\
+        Un d\'ia Petya recibi\'o un regalo de cumplea\~nos de su mam\'a, un libro llamado "Leyes y mitos de la Teor\'ia de Grafos". De este libro Petya aprendi\'o acerca de los grafos Hydra.
+        \\*
+        Un grafo no dirigido es un Hydra; si este tiene una estructura como la mostrada en la figura de abajo.
+        \\*
         Esta estructura tiene dos nodos $u$ y $v$ conectados por una arista. Estos son el pecho y el estomago de Hydra
         correspondientemente. El pecho es conectado con h nodos que son la cabeza de Hydra. El est\'omago est\'a conectado con t nodes que son la cola de Hydra.
-    \end{flushleft}
-      
-    \begin{flushleft}
-         Note que el Hydra es un \'arbol, que tiene $h+t+2$ nodos
+        \\*
+        Note que el Hydra es un \'arbol, que tiene $h+t+2$ nodos
     \end{flushleft}
     
     \begin{center}
@@ -90,6 +97,31 @@
   
     \begin{flushleft}
         Ahora Petya quiere encontrar un Hydra en el grafo G o estar segura que el grafo no tiene un Hydra.
+    \end{flushleft}
+
+
+    \vspace{1cm}
+    \noindent \textcolor{black}{\Large Entrada }
+    \begin{flushleft}
+        La primera linea contine cuatro enteros n,m,h,t $\left(1\leq n,m\leq {10}^{5} , 1 \leq h , t,\leq 100\right)$, el numero de los nodos y las 
+        aristas en el grafo \textit{G} y el n\'umero de la cabeza del Hydra y la cola .
+        \\*
+        Las proximas m lineas continen la descricion de las aristas del grafo \textit{G} . La $i-esima$ de esas lineas 
+        continen dos enteros $a_i$ y $b_i$ , $\left(1 \leq a_i , b_i \leq n , a \neq b\right)$ el numbero de los nodos conectados por la $i-esima$ arista 
+        \\*
+        Se garantiza que el grafo \textit{G} no contine lazos ni aristas multiples . Considera los nodos del grafo \textit{G} numerados desde 1 hasta n  
+    \end{flushleft}
+
+    \vspace{0.5cm}
+    \noindent \textcolor{black}{\Large Salida }
+    \begin{flushleft}
+        Si el grafo \textit{G} no contiene un hydra entonces imprimir -NO-
+        \\*
+        En otro caso , en la primera linea imprimir -YES- . En la segunda linea imprimir dos enteros  - los numeros de los nodos u y v . 
+        En la tercera linea imprimir h numeros  - los numeros de los nodos que son la cabeza  . En la cuarta linea imprimir t numeros  - los numeros de los nodos que son los pies . 
+        Todos los numneros que se impriman deben de ser distintos 
+        \\*
+        Si hay multiples posibles respuestas , tienes permitido imprimir cualquiera de ellas   
     \end{flushleft}
 
     \noindent \textbf{\Large Ejemplo 1}
@@ -213,6 +245,6 @@
     encontrar la estructura que queremos 
     
     \usemintedstyle{solarized-dark}
-    \inputminted[bgcolor = bg]{python} {../hydra.py}
+    \inputminted[bgcolor = bg ,frame = single , framerule = 3pt, framesep = 5pt , linenos = true ]{python} {../hydra.py}
     
 \end{document}
