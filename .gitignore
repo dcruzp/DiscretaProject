@@ -9,3 +9,5 @@
 *.txt
 *.o
 *.sh
+
+*_minted*
