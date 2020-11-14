@@ -1,7 +1,16 @@
-\documentclass[10pt]{article}
+\documentclass{article}
 
 \usepackage[spanish,es-noshorthands]{babel}
 \usepackage{tikz}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref} 
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\definecolor {bg} {rgb}{0.95,0.95,0.95}
+
 \usetikzlibrary{positioning,arrows.meta}
 \usetikzlibrary{shapes,snakes}
 
@@ -12,6 +21,14 @@
     \author{Daniel de la Cruz Prieto} 
     \date{\today} 
     \maketitle
+
+    \begin{abstract}
+        \noindent En este art\'iculo se hace un analisis completo , algoritmico para la solucion del ejercicio 
+        del Juez en l\'inea \href{https://coj.uci.cu}{\textcolor{blue}{Caribbean Online Judge (COJ)}} si quiere entrar directamente al link del 
+        problema \href{https://coj.uci.cu/24h/problem.xhtml?pid=1161}{\textcolor{blue}{click aqui}}   . En este articulo se muestra un analisis algoritmico , de tiempo y correctitud del 
+        algoritmo usado para resolver el problema 
+    \end{abstract}
+
 
     \section*{Descripcion del Problema } 
 
@@ -82,31 +99,140 @@
         que Nito camina solo. La salida debe escribirse en salida
         est\'andar.
     \end{flushleft}
-    \begin{center}
-        \tikzstyle{stylenode} = [vertex ,fill = black ,scale = 1]
-        \begin{tikzpicture}[vertex/.style={draw,circle} ]
-        
-            \node[ stylenode] (1) at (1,6) {} ; 
-            \node[ stylenode] (2) at (1,5) {} ; 
-            \node[ stylenode] (3) at (1,4) {} ; 
-            \node[ stylenode] (4) at (3,5) {} ; 
 
-            \node[ stylenode] (5) at (7,4) {} ; 
-            \node[ stylenode] (6) at (9,5) {} ; 
-            \node[ stylenode] (7) at (9,4) {} ; 
-            \node[ stylenode] (8) at (9,3) {} ; 
+    \noindent \textbf {Ejemplo de entrada } 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        5 3 2 1 6
+        3 4 10
+        4 5 10
+        5 1 3
+        5 2 4
+        1 3 23
+        2 3 24
+        8 1 7 8 8
+        1 2 1
+        2 4 1
+        2 3 1
+        4 5 1
+        3 5 1
+        5 6 1
+        6 8 1
+        6 7 1
+        -1 -1 -1 -1 -1
+    \end{minted}
+    \noindent \textbf {Ejemplo de salida} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+        20 4 3
+        4 1 1 
+    \end{minted}
+
+    \paragraph*{\large Para resolve este problema } 
+    Vamos a debatir lo que nos estan pidiendo en el ejercicio . Primero tenemos  un grafo \textit{G} no dirigido , sin lazos y sin aristas multiples , 
+    y dada la informacion de la ubicacion de la casa de Nito , Charly y el Bar (que son distintos los tres) tenemos que encontrar la distancia maxima que pueden caminar Charly y Nito sin que ninguno de los dos camine mas 
+    de la distancia minima que hay del bar a sus respectivas casas.
+    
+    \paragraph*{\large Idea para la resolucion del problema } 
+    El primer punto que necesitamos es saber cual es la distancia minima del Bar a las respectivas casas . Hay que encontrar una forma de saber si una interseccion se encuntra en uno de los caminos de longitud m\'inima que va desde el Bar a la casa de alguno de ellos .
+    Esto lo podemos hacer iterando por todos los posibles caminos de longitud minima que salen del bar hasta el punto x y chequeamos si en uno de esos caminos se encuentra la interseccion por la que estamos preguntando . 
+    \\*
+    La soluci\'on seria ir por todas las intersecciones y preguntar si esta es una interseccion que se encuentra en un camino de longitud minima del Bar a la casa de Nito y si a la vez es una interseccion que se encuentra en una camino de longitud m\'inima del Bar a la Casa de Charly , luego nos quedamos 
+    con la interseccion que cumpla las condiciones anteriores y que ademas cumpla que su distancia al Bar sea la mayor 
+    
+    \paragraph*{Cosas necesarias para la resoluci\'on del problema } 
+    Necesitamos calcular la distancia minima que hay partiendo de un v\'ertice \textit{B} en un Grafo \textit{G} ponderado hasta todos los demas vertices del Grafo 
+    \\*
+    Para esto vamos a usar el algoritmo de Dikjstra que es perfectamente aplicable en nuestro problema pues los grafos que se presentan en el problema son grafos no dirigidos ponderados donde el peso de las aristas siempre es positivo 
 
 
-            \draw [line width = 2] (1) -- (4);
-            \draw [line width = 2] (2) -- (4);
-            \draw [line width = 2] (3) -- (4);
+    \paragraph*{Nota:} vamos a denotar a $d_u\left[v\right]$ como la menor distancia que hay del v\'ertice $u$ al v\'ertice  $v$ 
 
-            \draw [line width = 2] (4) -- (5);
+    \newtheorem{thm}{Teorema}
+    \begin{thm}
+        En un grafo $G$ ponderado y no dirigido se cumple que $d_u\left[v\right] = d_v\left[u\right] $ 
+    \end{thm}
 
-            \draw [line width = 2] (5) -- (6);
-            \draw [line width = 2] (5) -- (7);
-            \draw [line width = 2] (5) -- (8);
+    \noindent Vamos a suponer que el tenemos un grafo $G$ en el que no se cumple que $d_u\left[v\right] ~= ~d_v\left[u\right] $ ,  o sea que existen 
+    v\'ertices $u$ y $v$ tal que $d_u\left[v\right] \neq d_v\left[u\right] $ .
+    \\[10pt]
+    Si  $d_u\left[v\right] \neq d_v\left[u\right] $  es porque $d_u\left[v\right] < d_v\left[u\right] $  o porque $d_u\left[v\right] > d_v\left[u\right] $ 
+    \\[10pt]
+    Vamos a demostrar que no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $
+    \\*
+    Si $d_u\left[v\right] < d_v\left[u\right] $ es porque existe al menos un camino $c_1 = \{u ,\dots, v\}$ de longitud mininma que va del vertice $u$ al vertice $v$ 
+    como el grafo es n dirigido podemos tomar el camino que va del vertice $v$ al vertice $u$ siguiendo la misma secuencia de vertices del camino $c_1$ lo que en el otro sentido ,  es decir 
+    tomar a $c_2$ como $\{v,\dots , u\}$ , Este camino $c_2$ que va de $v$ a $u$ tiene la misma longitud que $c_1$ .Por lo que se cumple  $d_v\left[u\right] \leq d_u\left[v\right]$. 
+    Luego hemos demostrado que  no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $
+    \\[10pt]
+    Si hacemos un analisis igual podemos demostrar tambien que tampoco puede ocurrir que $d_u\left[v\right] > d_v\left[u\right] $ . 
+    Luego no puede ocurrir que $d_u\left[v\right] \neq d_v\left[u\right] $ 
+    \\[5pt]
+    $\Rightarrow$ Por lo que podemos afirmar que $d_u\left[v\right] ~= ~ d_v\left[u\right] $ en un grafo ponderado y no dirigido 
 
-        \end{tikzpicture}
-    \end{center}
+    \begin{thm}
+        Sea $u$ , $v$ dos v\'ertices distintos de un Grafo  $G$ ponderado y no dirigido donde se tiene  que $d_u\left[v\right] = d_v\left[u\right] = m $  , y sea $t$ un v\'ertice de $G$ distinto de $u$ y de $v$ entonces se cumple que si
+        $d_u\left[t\right] + d_v\left[t\right] = m $ entonces el v\'ertice $t$ pertenece a un camino m\'inimo entre $u$ y $v$  
+    \end{thm}
+
+    Vamos a suponer que $d_u\left[t\right] + d_v\left[t\right] = m $ y que el v\'ertice $t$ no pertenece a ninguno de los caminos minimos de $u$ a $v$ 
+    \\[5pt] 
+    $\Rightarrow$ Si $d_u\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $u$ al v\'ertice  $t$  , vamos a llamrle a este camino $C_1$
+    \\*
+    Si $d_v\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $v$ al v\'ertice  $t$  , vamos a llamrle a este camino $C_2$
+    \\*
+    Si tomamos el camino $C_1$ y despues el camino $C_2$ podemos ir del vertice $u$ al vertice $u$ pasando por el vertice $t$ . Esto se puede hacer , pues el grafo es no dirigido y ponderado luego se existe un camino de longitud minima del vertice $v$ al vertice $t$ tambien va 
+    a existir un camino de longitud m\'inima del v\'ertice $t$ al v\'ertice $v$ y ademas sabemos que $d_t\left[v\right] = d_v\left[t\right]$ por el resultado enterior .
+    \\*
+    Ahora si llamamos $C$ al camino que va de $u$ a $v$ pasando por $t$ que se puede formar con el camino $C_1$ y el camino $C_2$  . Ahora como se cumple que $d_t\left[v\right] = d_v\left[t\right]$  entonces tenemos que la longitud del camino $C$ esta dada por $d_u\left[t\right] + d_t\left[v\right]$ pero sabemos que esto es igual a 
+    $d_u\left[t\right] + d_v\left[t\right] = m $ , Por lo que tenemos que el camino formado $C$ tiene longitud minima . Por lo tanto el camino $C$ es un camino de longitud minima que va del vertice $u$ al vertice $v$ y se cumple que el vertice $t$ pertenece al camino $C$ . Luego hemos encontrado un camino de longitud m\'inima que va de $u$ a $v$ pasando por $t$ .
+    \\*
+    Luego he encontrado una contradiccion con lo que habia supuesto . 
+    \\* 
+    Entonces podemos concluir que si se cumple que $d_v\left[t\right] + d_v\left[t\right] = m = d_u\left[v\right] ~=~ d_v\left[u\right]$    el vertice $t$ pertenece a un camino de longitud m\'inima    
+    
+    
+    \section*{Algoritmo de Dijkstra}
+
+    \begin{algorithm}[h]
+        \caption{\textit{Dikjstra's algorithm}}
+        \begin{algorithmic}[1]      
+          \State $\lambda \left(s \right) \leftarrow 0 $
+          \State $Q \leftarrow \{s\}$
+          \State $P \leftarrow \emptyset $
+
+          \While {$Q \neq \emptyset $}
+                \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
+                \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
+                \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
+                \ForAll {$<u,v>$}
+                    \If {$u \in Q $}
+                        \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
+                    \Else
+                        \If {$u \notin P$} 
+                            \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
+                            \State $ Q \leftarrow  Q \cup \{u\}$
+                        \EndIf
+                    \EndIf 
+                \EndFor
+          \EndWhile 
+        \end{algorithmic}
+    \end{algorithm}
+
+    
+    \subsection*{Lema 1}
+        \textit{Cuando al algoritmo de Diskjstra se aplica sobre un grafo finito $G\left(V,E\right)$ este termina} 
+
+    \textbf{Demostracion } 
+        Este algoritmo trabaja basicamente sobre la cola $Q$ de vertices 
+        Cada vertice $v$ entra a la cola $Q$ a lo sumo una vez , esto lo podemos ver claramente en la 14 donde primero se pregunta si el vertice a incluir en 
+        la cola $Q \notin P $ .Aqui la relacion de los conjuntos $P$ y $Q$ es que una vez que un vertice es escogido como el de menor "peso" este sale de la cola 
+        $Q$ y pasa a ser parte del conjunto $P$ . 
+        \\*
+        Luego una vez que un vertice es escogido en la linea 5 este sale inmediatamente de la cola $Q$ y entra en el conjunto $P$ . 
+        \\*
+        Luego un vertice $v$ no puede entrar mas de una vez a $Q$ . por lo que una vez que la linea 5 se haya ejecutado $|V| $ veces (donde $V$  es el conjunto de vertices del grafo $G$)
+    
+    \subsection*{Lema 2} 
+        \textit{Durante la ejecucion del algoritmo de Dijkstra cada v\'ertice accesible desde $s$ queda marcado , ($\lambda (v)$toma un valor) }
+
 \end{document}
