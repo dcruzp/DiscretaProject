@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[10pt]{article}  
 
 \usepackage[spanish,es-noshorthands]{babel}
 \usepackage{tikz}
@@ -8,6 +8,7 @@
 \usepackage{amsmath}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage{makeidx} 
 
 \definecolor {bg} {rgb}{0.95,0.95,0.95}
 
@@ -21,16 +22,20 @@
     \author{Daniel de la Cruz Prieto} 
     \date{\today} 
     \maketitle
+    
 
     \begin{abstract}
-        \noindent En este art\'iculo se hace un analisis completo , algoritmico para la solucion del ejercicio 
-        del Juez en l\'inea \href{https://coj.uci.cu}{\textcolor{blue}{Caribbean Online Judge (COJ)}} si quiere entrar directamente al link del 
-        problema \href{https://coj.uci.cu/24h/problem.xhtml?pid=1161}{\textcolor{blue}{click aqui}}   . En este articulo se muestra un analisis algoritmico , de tiempo y correctitud del 
+        \noindent En este art\'iculo se hace un analisis completo , 
+        algoritmico para la solucion del ejercicio del Juez en 
+        l\'inea \href{https://coj.uci.cu}{\textcolor{blue}{Caribbean Online Judge (COJ)}} 
+        si quiere entrar directamente al link del problema 
+        \href{https://coj.uci.cu/24h/problem.xhtml?pid=1161}{\textcolor{blue}{click aqui}} 
+        . En este articulo se muestra un analisis algoritmico , de tiempo y correctitud del 
         algoritmo usado para resolver el problema 
     \end{abstract}
 
 
-    \section*{Descripcion del Problema } 
+    \section*{Descripci\'on del Problema } 
 
     \begin{flushleft}
     Charly y Nito son amigos y les gusta estar juntos en un lindo bar en 
@@ -127,112 +132,397 @@
         4 1 1 
     \end{minted}
 
-    \paragraph*{\large Para resolve este problema } 
-    Vamos a debatir lo que nos estan pidiendo en el ejercicio . Primero tenemos  un grafo \textit{G} no dirigido , sin lazos y sin aristas multiples , 
-    y dada la informacion de la ubicacion de la casa de Nito , Charly y el Bar (que son distintos los tres) tenemos que encontrar la distancia maxima que pueden caminar Charly y Nito sin que ninguno de los dos camine mas 
-    de la distancia minima que hay del bar a sus respectivas casas.
-    
-    \paragraph*{\large Idea para la resolucion del problema } 
-    El primer punto que necesitamos es saber cual es la distancia minima del Bar a las respectivas casas . Hay que encontrar una forma de saber si una interseccion se encuntra en uno de los caminos de longitud m\'inima que va desde el Bar a la casa de alguno de ellos .
-    Esto lo podemos hacer iterando por todos los posibles caminos de longitud minima que salen del bar hasta el punto x y chequeamos si en uno de esos caminos se encuentra la interseccion por la que estamos preguntando . 
+    \section{Analisis del problema} 
+    \subsection*{Discuci\'on del problema } 
+
+    \noindent Vamos a hacer un debate de lo que tenemos para la resolucion de este problema. Vamos a analizar 
+    que nos dan y que nos piden .
     \\*
-    La soluci\'on seria ir por todas las intersecciones y preguntar si esta es una interseccion que se encuentra en un camino de longitud minima del Bar a la casa de Nito y si a la vez es una interseccion que se encuentra en una camino de longitud m\'inima del Bar a la Casa de Charly , luego nos quedamos 
-    con la interseccion que cumpla las condiciones anteriores y que ademas cumpla que su distancia al Bar sea la mayor 
-    
-    \paragraph*{Cosas necesarias para la resoluci\'on del problema } 
-    Necesitamos calcular la distancia minima que hay partiendo de un v\'ertice \textit{B} en un Grafo \textit{G} ponderado hasta todos los demas vertices del Grafo 
+    Tenemos un grafo que cumple las siguiente condiciones :
+
+    \begin{itemize}
+        \item El grafo $G$ es un grafo no dirigido (Esto quere decir que si existe una arista del v\'ertice $v$ al v\'ertice $u$ entonces tambien va a existir una arista del v\'ertice $u$ al v\'ertice $v$ )
+        \item El grafo $G$ no tiene lazos (Esto quiere decir que no puede existir una arista que conecte al mismo v\'ertice)
+        \item El grafo $G$ no tiene arista m\'ultiples (esto quiere decir que dos v\'ertices pueden estar conectados por a lo sumo una arista  ) 
+        \item El grafo $G$ es ponderado (Esto es que todos las aristas tienen una funcion de dado  asociada )
+    \end{itemize}
+      
+
+    \noindent Entonces tenemos un grafo no dirigido , sin lazos , sin aristas m\'ultiples y con una funci\'on de peso asociada a sus aristas  
     \\*
-    Para esto vamos a usar el algoritmo de Dikjstra que es perfectamente aplicable en nuestro problema pues los grafos que se presentan en el problema son grafos no dirigidos ponderados donde el peso de las aristas siempre es positivo 
+    Nos dan tres v\'ertices distintos $N$ , $C$ y $B$ , la ubicaci\'on de la casa de Charly  , de Nito y del Bar respectivamente  
+    
+    \vspace*{0.5cm}
+    \noindent Y nos piden determinar cual es la mayor distancia que pueden caminar Charly y Nito juntos partiendo desde el Bar sin que ninguno de los dos camine mas que la distancia m\'inima que hay del Bar a sus respectivas casas
+    \\*
+    Usando un lenguaje mas t\'ecnico esto quiere decir que tenemos  que encontrar un v\'ertice $t$ que cumpla las siguientes condiciones : 
+
+    \begin{itemize}
+        \item Que el v\'ertice $t$ se encuentre en un camino de costo minimo del Bar a la casa de Charly 
+        \item Que el v\'ertice $t$ se encuentre en un camino de costo minimo del Bar a la casa de Nito
+        \item Que el v\'ertice $t$ se encuentre lo m\'as alejado posible del v\'ertice $B$ 
+        \item Que existan dos caminos $c_1$ y $c_2$ de costo m\'inimo del v\'ertice $B$ a los v\'ertices $N$ y $C$ donde los camino $c_1$ y $c_2$ sean distintos despues del v\'ertice $t$ (que hasta el v\'ertice $t$ los caminos sean iguales)  
+    \end{itemize}
 
 
-    \paragraph*{Nota:} vamos a denotar a $d_u\left[v\right]$ como la menor distancia que hay del v\'ertice $u$ al v\'ertice  $v$ 
+    \subsection*{ Idea para la resolucion del problema } 
+    \begin{itemize}
+        \item \textbf{Idea 1 }Lo primero que se me ocurri\'o y que creo que es lo primero que se le ocurre a todo el mundo , es encontrar todos los caminos de costo m\'inino del Bar a la casa de Charly (Conjunto \textit{MCCharly})y todos los caminos de costo m\'inimos del Bar a la casa de Nito (conjunto \textit{MCNito})y por cada uno de los caminos de \textit{CMCharly} probar todos 
+        los caminos de \textit{CMNito} y quedarme con el par de caminos que cumpla todas las condiciones que se exponen en el problema .
+        \\*
+        Si bien sabemos que este procedimiento es v\'alido y que nos va a 
+        llevar a la respuesta que queremos tiene como inconveniente que 
+        para un vol\'umen de datos de la entrada moderadamente "grande" 
+        se nos hace muy engorroso y poco factible. 
+        
+        \item \textbf{Idea 2} Esta idea es una poco mas acabada y se me ocurri\'o despues de mucho pensar como se podia  llegar a una soluci\'on  (pensanado en terminos computacionales ) 
+        y la idea se basa en el uso del algoritmo de Dijkstra para encontrar los caminos de costa m\'inimo . La idea es la siguiente :
+        \\*
+        Voy a determinar la distancia m\'inima desde el Bar al resto de los v\'ertices del Grafo $G$ y lo voy a guardar en un array , y voy a hacer lo mismo con los vertices $C$ (casa de Charly ) y $N$ (casa de Nito) . Luego con esta informaci\'on voy a tratar de encontrar lo que me piden de la siguiente manera :
+        Voy a recorrer todos los vertices del grafo y le voy a preguntar si el pertenece a un camino m\'inimo entre el Bar y la casa de Charly , y despues voy a preguntarle si este se encuentra en un camino minimo del Bar a la casa de Nito .
+        Luego me voy a quedar con el vertice que  cumpla la condicion anterior y que ademas se encuntre lo mas distante posible del vertice $B$ (el Bar) .    
+        \\*
+        Esta idea es la que trate de desarrollar y es la que voy a abordar en este art\'iculo 
+    \end{itemize}
+    
+    
+    \section{Soluci\'on al problema } 
+
+    \noindent La soluci\'on a este problema se basa en la segunda idea que expuse anteriormente .
+    Pero esta idea necesita fundamentaci\'on , demostraci\'on y an\'alisis de un algoritmo que me compute la soluci\'on 
+    
+    
+    \subsection{Explicaci\'on de la soluci\'on }
+    \noindent Voy a argumetar mejor la idea 2 y detallar paso por paso que es lo que quiero hacer 
+    
+    \begin{enumerate}
+        \item Lo primero que voy a hacer es determinar la menor distancia que hay desde $B$ (el Bar) hasta los demas v\'ertices del grafo y lo voy a almacenar en un array $d_{B} $ 
+        \item Despu\'es voy a determinar la menor distancia  que hay desde $C$ (la casa de Charly ) hasta los dem\'as v\'ertices del grafo y lo voy a almacenar en un array $d_{C}$
+        \item Despu\'es voy a determinar la menor distancia  que hay desde $N$ (la casa de Nito ) hasta los dem\'as v\'ertices del grafo y lo voy a almacenar en un array $d_{N}$
+        \item Por \'ultimo voy a recorrer todos los v\'ertices del grafo , y por cada v\'ertice voy a verificar si ese v\'ertice esta en un camino de longitud m\'inima desde el Bar hasta la casa de Charly y si tambi\'en esta en un camino de longitud m\'inima desde el Bar a la casa de Nito  y me voy a quedar con el que cumpla las condiciones anteriores y adem\'as se encuentre mas alejado del Bar   
+    \end{enumerate}
+     
+    \subsection{Como voy a hacer esto } 
+
+    \noindent Para los primeros tres puntos de arriba voy a aplicar el algoritmo de Dikjstra , el cual es un algoritmo que computa las distancias de los caminos de longitud m\'inima partiendo desde un v\'ertice $s$ hasta los demas v\'ertices del grafo 
+    \\*
+    En el ultimo punto necesito hacer tres preguntas , por cada uno de los v\'ertices del grafo para esto necesito establecer dos cosas : 
+    
+    \begin{enumerate}
+        \item Como saber si un vertice $t$ pertenece a un camino de longitud m\'inima entre un v\'ertice $a$ y otro v\'ertice $b$ 
+        \item Saber cual es la menor distancia desde un v\'ertice $a$ hasta otro v\'ertice $b$ 
+    \end{enumerate}
+
+    \noindent Saber cual es la menor distancia desde un v\'ertice $a$ hasta otro $b$ se puede hacer auxiliandote en el c\'alculo del algoritmo de Dijkstra 
+    \\*
+    Ahora lo m\'as interesante es el primer punto : 
+    \\*
+    \textit{ ?` Como saber si un v\'ertice t pertenece o no a un camino de longitud m\'inima entre un v\'ertice u y un v\'ertice v ?} 
+    
+    \subsubsection{?`Como saber si un vertice \textit{t} pertenece a un camino de longitud m\'inima entre un v\'ertice \textit{u} y un v\'ertice \textit{v} ?}
+    
+    \textbf{Nota:} 
+    \begin{itemize}
+        \item El resultado que vamos a obtener es sobre grafos ponderados no dirigidos  (porque nos interesa solo los grafos ponderado no dirigido para el an\'alisis de este problema  ) 
+        \item vamos a denotar a $d_u\left[v\right]$ como la longitud de los caminos m\'inimos que hay del v\'ertice $u$ al v\'ertice  $v$ .Aqui hay que aclarar que si $v$ no es alcanzable desde $u$ es porque no existe ning\'un camino que vaya de $u$ a $v$ , luego es imposible poder calcular $d_u\left[v\right]$ , en este caso asumimos que $d_u\left[v\right] = \infty $
+    \end{itemize}
+    
 
     \newtheorem{thm}{Teorema}
+
     \begin{thm}
-        En un grafo $G$ ponderado y no dirigido se cumple que $d_u\left[v\right] = d_v\left[u\right] $ 
+        Sea $G$ un Grafo ponderado y no dirigido entonces para todo $u$ , $v$ v\'ertices del Grafo  se cumple que $d_u\left[v\right] = d_v\left[u\right] $ 
     \end{thm}
 
-    \noindent Vamos a suponer que el tenemos un grafo $G$ en el que no se cumple que $d_u\left[v\right] ~= ~d_v\left[u\right] $ ,  o sea que existen 
-    v\'ertices $u$ y $v$ tal que $d_u\left[v\right] \neq d_v\left[u\right] $ .
+    \noindent \textit{\textbf{Demostraci\'on}}
+
+    \noindent Vamos a suponer que tenemos un grafo $G$ ponderado y no dirigido en el que existen $u$ , $v$ tal que  $d_u\left[v\right] \neq d_v\left[u\right] $ .
     \\[10pt]
     Si  $d_u\left[v\right] \neq d_v\left[u\right] $  es porque $d_u\left[v\right] < d_v\left[u\right] $  o porque $d_u\left[v\right] > d_v\left[u\right] $ 
     \\[10pt]
-    Vamos a demostrar que no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $
-    \\*
-    Si $d_u\left[v\right] < d_v\left[u\right] $ es porque existe al menos un camino $c_1 = \{u ,\dots, v\}$ de longitud mininma que va del vertice $u$ al vertice $v$ 
-    como el grafo es n dirigido podemos tomar el camino que va del vertice $v$ al vertice $u$ siguiendo la misma secuencia de vertices del camino $c_1$ lo que en el otro sentido ,  es decir 
-    tomar a $c_2$ como $\{v,\dots , u\}$ , Este camino $c_2$ que va de $v$ a $u$ tiene la misma longitud que $c_1$ .Por lo que se cumple  $d_v\left[u\right] \leq d_u\left[v\right]$. 
-    Luego hemos demostrado que  no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $
+    Vamos a demostrar que no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $ \textit{Aqui hay que aclarar que es importante que se pueda calcular $d_u\left[v\right]$ si no es asi entonces no tendr\'ia sentido el an\'alisis que estamos haciendo }
     \\[10pt]
-    Si hacemos un analisis igual podemos demostrar tambien que tampoco puede ocurrir que $d_u\left[v\right] > d_v\left[u\right] $ . 
-    Luego no puede ocurrir que $d_u\left[v\right] \neq d_v\left[u\right] $ 
+    Si $d_u\left[v\right] \neq \infty$ es porque existe al menos un camino m\'inimo $c_1 = \{u ,\dots, v\}$ que va del v\'ertice $u$ al vertice $v$ . 
+    Como el grafo es no dirigido podemos tomar el camino que va del v\'ertice $v$ al v\'ertice $u$ siguiendo la misma secuencia de vertices del camino $c_1$ lo que en el otro sentido ,  es decir 
+    tomar a $c_2$ como $\{v,\dots , u\}$ , Este camino $c_2$ que va de $v$ a $u$ tiene la misma longitud que $c_1$ .Por lo tanto $d_{v}\left[u\right]$ se puede calcular porque existe al menos un camino de $v$ a $u$  cuya longitud es igual a  $d_{u}\left[v\right]$ . Entonces se cumple que  $d_v\left[u\right] \leq d_u\left[v\right]$. 
+    Entonces hemos demostrado que  no puede ocurrir que $d_u\left[v\right] < d_v\left[u\right] $
+    \\[10pt]
+    Si hacemos un an\'alisis igual al anterior pero con $d_{v}\left[u\right]$ entonces vemos que tampoco puede ocurrir que $d_u\left[v\right] > d_v\left[u\right] $ .  Luego no puede ocurrir que existan v\'ertices $u$ y $v$ tal que $d_u\left[v\right] \neq~d_{v}\left[u\right] $ 
     \\[5pt]
-    $\Rightarrow$ Por lo que podemos afirmar que $d_u\left[v\right] ~= ~ d_v\left[u\right] $ en un grafo ponderado y no dirigido 
+    $\Rightarrow$ Luego en un grafo ponderado y no dirigido  $d_u\left[v\right] = d_v\left[u\right] $ .
 
     \begin{thm}
-        Sea $u$ , $v$ dos v\'ertices distintos de un Grafo  $G$ ponderado y no dirigido donde se tiene  que $d_u\left[v\right] = d_v\left[u\right] = m $  , y sea $t$ un v\'ertice de $G$ distinto de $u$ y de $v$ entonces se cumple que si
-        $d_u\left[t\right] + d_v\left[t\right] = m $ entonces el v\'ertice $t$ pertenece a un camino m\'inimo entre $u$ y $v$  
+        Sea $G$ un Grafo ponderado y no dirigido y sean $u$ , $v$ dos v\'ertices distintos de $G$ donde se tiene  que $d_u\left[v\right] = d_v\left[u\right] = m $  (que $u$ y $v$ son alcanzables mutuamente ), y sea $t$ un v\'ertice de $G$ distinto de $u$ y de $v$ entonces se cumple que si
+        $d_u\left[t\right] + d_v\left[t\right] = m $ entonces el v\'ertice $t$ pertenece a un camino m\'inimo entre $u$ y $v$ . 
     \end{thm}
 
-    Vamos a suponer que $d_u\left[t\right] + d_v\left[t\right] = m $ y que el v\'ertice $t$ no pertenece a ninguno de los caminos minimos de $u$ a $v$ 
+    \noindent \textit{\textbf{Demostraci\'on}}
+
+    \noindent Vamos a suponer que $d_u\left[t\right] + d_v\left[t\right] = m $ y que el v\'ertice $t$ no pertenece a ninguno de los caminos m\'inimos entre $u$ y $v$ 
     \\[5pt] 
-    $\Rightarrow$ Si $d_u\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $u$ al v\'ertice  $t$  , vamos a llamrle a este camino $C_1$
+    Si $d_u\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $u$ al v\'ertice  $t$  , vamos a llamarle a este camino $C_1$.
+    Igual ocurre si  $d_v\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $v$ al v\'ertice  $t$  , vamos a llamarle a este camino $C_2$
     \\*
-    Si $d_v\left[t\right]$ se puede calcular es porque existe  al menos un camino de longitud m\'inima del v\'ertice $v$ al v\'ertice  $t$  , vamos a llamrle a este camino $C_2$
+    Si tomamos el camino $C_1$ y despu\'es el camino $C_2$ podemos ir del v\'ertice $u$ al v\'ertice $v$ pasando por el vertice $t$ . Esto se puede hacer , pues el grafo es no dirigido , luego se existe un camino de longitud m\'inima del v\'ertice $v$ al v\'ertice $t$ tambien va 
+    a existir un camino de longitud m\'inima del v\'ertice $t$ al v\'ertice $v$ y adem\'as sabemos que $d_t\left[v\right] = d_v\left[t\right]$ por el resultado anterior .
     \\*
-    Si tomamos el camino $C_1$ y despues el camino $C_2$ podemos ir del vertice $u$ al vertice $u$ pasando por el vertice $t$ . Esto se puede hacer , pues el grafo es no dirigido y ponderado luego se existe un camino de longitud minima del vertice $v$ al vertice $t$ tambien va 
-    a existir un camino de longitud m\'inima del v\'ertice $t$ al v\'ertice $v$ y ademas sabemos que $d_t\left[v\right] = d_v\left[t\right]$ por el resultado enterior .
+    Ahora si llamamos $C$ al camino que va de $u$ a $v$ pasando por $t$ que se puede formar con el camino $C_1$ y el camino $C_2$  . Como se cumple que $d_t\left[v\right] = d_v\left[t\right]$  entonces tenemos que la longitud del camino $C$ esta dada por $d_u\left[t\right] + d_t\left[v\right]$ entonces 
+    $d_u\left[t\right] + d_v\left[t\right] = m $ . Por lo tanto el camino $C$ es un camino de longitud m\'inima que va del v\'ertice $u$ al vertice $v$ y se cumple que el vertice $t$ pertenece al camino $C$ . Luego hemos encontrado un camino de longitud m\'inima que va de $u$ a $v$ pasando por $t$ .
     \\*
-    Ahora si llamamos $C$ al camino que va de $u$ a $v$ pasando por $t$ que se puede formar con el camino $C_1$ y el camino $C_2$  . Ahora como se cumple que $d_t\left[v\right] = d_v\left[t\right]$  entonces tenemos que la longitud del camino $C$ esta dada por $d_u\left[t\right] + d_t\left[v\right]$ pero sabemos que esto es igual a 
-    $d_u\left[t\right] + d_v\left[t\right] = m $ , Por lo que tenemos que el camino formado $C$ tiene longitud minima . Por lo tanto el camino $C$ es un camino de longitud minima que va del vertice $u$ al vertice $v$ y se cumple que el vertice $t$ pertenece al camino $C$ . Luego hemos encontrado un camino de longitud m\'inima que va de $u$ a $v$ pasando por $t$ .
-    \\*
-    Luego he encontrado una contradiccion con lo que habia supuesto . 
-    \\* 
-    Entonces podemos concluir que si se cumple que $d_v\left[t\right] + d_v\left[t\right] = m = d_u\left[v\right] ~=~ d_v\left[u\right]$    el vertice $t$ pertenece a un camino de longitud m\'inima    
+    Por lo que existe una contradiccion con lo que habia supuesto . Entonces podemos concluir que si se cumple que $d_v\left[t\right] + d_u\left[t\right] = m $    el v\'ertice $t$ pertenece a un camino de longitud m\'inima  entre $u$ y $v$  
     
+    \subsubsection{Seudocodigo de la Soluci\'on }
     
-    \section*{Algoritmo de Dijkstra}
-
     \begin{algorithm}[h]
-        \caption{\textit{Dikjstra's algorithm}}
-        \begin{algorithmic}[1]      
-          \State $\lambda \left(s \right) \leftarrow 0 $
-          \State $Q \leftarrow \{s\}$
-          \State $P \leftarrow \emptyset $
-
-          \While {$Q \neq \emptyset $}
-                \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
-                \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
-                \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
-                \ForAll {$<u,v>$}
-                    \If {$u \in Q $}
-                        \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
-                    \Else
-                        \If {$u \notin P$} 
-                            \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
-                            \State $ Q \leftarrow  Q \cup \{u\}$
-                        \EndIf
-                    \EndIf 
-                \EndFor
-          \EndWhile 
+        \caption{\textit{Solution}}
+        \begin{algorithmic}[1]  
+            \State $d_{B}$ $\leftarrow shortedPath \left(B\right)$   
+            \State $d_{C}$ $\leftarrow shortedPath \left(C\right)$ 
+            \State $d_{N}$ $\leftarrow shortedPath \left(N\right)$ 
+            \State $dC \leftarrow $ $d_{B}\left[C\right]$
+            \State $dN \leftarrow $ $d_{B}\left[N\right]$
+            \State $m \leftarrow 0 $
+            \State $c \leftarrow dC$
+            \State $n \leftarrow dN$ 
+            \ForAll {$v \in V\left(G\right)$}
+                \If {$dC=d_{B}\left[v\right] + d_{C} \left[v\right]  $ \textbf{and} $ dN = d_{B}\left[v\right] + d_{N} \left[v\right]  $ \textbf{and} $d_{B}\left[v\right] > m $}
+                    \State $ m \leftarrow d_{B} \left[v\right]$
+                    \State $ c \leftarrow d_{C} \left[v\right]$ 
+                    \State $ n \leftarrow d_{N} \left[v\right]$ 
+                \EndIf 
+            \EndFor
         \end{algorithmic}
     \end{algorithm}
 
+    \noindent Voy a explicar el seudoc\'odigo del algoritmo 
+    \\*
+    En las lineas 1-3 se aplica el algoritmo de Dijkstra para calcular las menores distancias desde el $B$ (Bar) , $C$ (la casa de Charly) , $N$ (casa de Nito) a los demas v\'ertices del grafo . 
+    \textit{sortedPath()} es el algoritmo de Dijkstra cuyo calculo de los caminos minimos es almacenado en los array $d_B$ , $d_C$ , $d_N$   , se denota a $m$ como la mayor distancia que pueden recorrer Charly y Nito juntos  , y $c$ y a $n$ como la distancia que recorre Chraly y Nito solos respectivamente 
+    .De la linea 6-8  las variables m , c , n toman valores 0 , distancia m\'inima desde el Bar hasta casa de Charly y distancia m\'inima desde el Bar hasta casa de Nito respectivamente . ahora de la Linea 9-14, el algoritmo lo que hace es recorrer todos los v\'ertices del grafo y preguntar en la linea 10 si 
+    el v\'ertice que en el que est\'a  cumple las condiciones expuestas arriba  (esto ma grarantiza que que el v\'ertice $v$ se encuentra en un camino minimo del Bar a la Casa de Nito y tambien que esta en un camino de longitud minima del Bar a la casa de Charly), si adem\'as de estas condiciones cumple que  
+    la distancia desde B hasta $v$ cumple que la menor distancia desde $B$ (Bar) hasta $v$ es mayor que $m$ entonces actualizo m , c y n . porque en este punto del algoritmo encontre un v\'ertices  que esta mas alejado del Bar el cual es com\'un a dos de los caminos de longitud minima desde el $B$ hasta $C$ y desde $B$ hasta $N$
+    \\[10pt] 
+    Pero aqui no estamos teniendo en cuenta una de las condiciones que el problema nos esta plantenado y es que nosotros hemos visto que un v\'ertice $t$ que se encuentre en un camino $C_{min} = \{b,\dots,c\}$  que va del v\'ertice  $B$ al  v\'ertice $C$ y que $t$ se encuentra en un camino m\'inimo $N_{min} = \{b,\dots,n\}$  que va del v\'ertice  $B$ al  v\'ertice $N$ pero 
+    no garantizamos que los camino $C_{min}$ y $N_{min}$ sea caminos comunes hasta el vertice $t$ (es decir que el subcamino  $C_{min} $ que va desde $B$ hasta $t$ no tiene porque coincidir con el subcamino $N_{min} $ que va desde $B$ hasta $t$ ).
+    \\[10pt] 
+    Ahora vamos a puntualizar este aspecto del an\'alisis que estamos plantenado de la soluci\'on al problema 
+    \\[10pt]
+    \textit{?` Porque no es necesario que el subcamino $C_{min}$ coincida con el subcamino $N_{min}$ para que la soluci\'on sea correcta ?}
+    \\[10pt] 
+    Vamos a demostrar que si $t$ se encuentra en un camino de longitud m\'inima desde $B$ hasta $N$ y tambi\'en se encuentra en un camino de longitud m\'inima desde $B$ hasta $C$  entonces existen dos caminos  de longitud m\'inima , $C1_{min}$que va de $B$ hasta $C$ y  $N1_{min}$que va desde $B$ hasta $N$ a los cuales $t$ pertenece y que los subcaminos de $N1_{min}$ y de $C1_{min}$ que van desde $B$ hasta $t$ coinciden .
+
+    \begin{thm}
+        Sea $G$ un Grafo y $B$ , $N$ y $C$ v\'ertices distintos  del Grafo entonces si existe los camino m\'inimo $C1$ y $N1$ que van de $B$ a $C$ y de $B$ a $N$ a los cuales $t$ pertenece entonces existen tambi\'en dos camino m\'inimos $C_{min}$ y $N_{min}$ a los cuales $t$ pertenece y los subcaminos de $C_{min}$ y de $N_{min}$ que van de $B$ hasta $t$ son iguales  
+    \end{thm}
+
+    \noindent \textit{\textbf{Demostraci\'on}}
+
+    \noindent Si los subcaminos que van de $B$ a $t$ en $C1$ y $N1$  coinciden entonces ya cumple la condici\'on
+    \\*
+    Primero vamos a denotar como $SC$ al subcamino de $C1$ que va de $B$ a $t$  y $SN$ como es subcamino de $N1$ que va de $B$ $t$ . Entonces vamos a analizar el caso en que $SC$ y $SN$ sean distintos 
+    \\*
+    Esta claro que $SC$ y $SN$ tienen la misma longitud pues son subcaminos de longitud m\'inima desde $B$ hasta $t$ , sino hubiera una contradiccion con lo antes demostrado . 
+    \\*
+    Como $SC$ y $SN$ tienen la misma longitud puedo formar $C_{min}$  y $N_{min}$ de la sigiente manera:
+    $C_{min}$ va a ser el camino $SC$ siguiendo despues por el camino $C1$ a partir del vertice $t$ hasta $C$ (que es el propio camino $C1$).
+    Ahora $N_{min}$ lo vamos a formar tomando primero el subcamino $SC$ y despu\'es siguiendo por el camino $N1$ a partir del v\'ertice $t$ hasta $N$ ,
+    $N_{min}$ es de longitud minima pues $SC$ y $SN$ tiene la misma longitud.
+    \\[10pt]
+    $\Rightarrow$ Entonces he construido dos caminos de longitud m\'inima $C_{min}$ que va de $B$ a $C$ y $N_{min}$ que va de $B$ a $N$  tal que sus subcaminos hasta el v\'ertice $t$ son iguales  
+    \\[10pt] 
+    Luego este resultado nos garantiza que siempre que encontremos dos caminos de longitud m\'inima desde $B$ hasta $C$ y desde $B$ hasta $N$ a los cuales $t$ pertenece, entonces vamos a poder encontrar dos caminos de  longitud m\'inima desde $B$ hasta $C$ y desde $B$ hasta $N$ a los cuales $t$ pertenece , cuyos subcaminos desde $B$ hasta $t$ son iguales .
+
+
+    \subsection{Correctitud del algoritmo} 
+
+    \noindent La solucion pasa por aplicar Dijkstra , luego su correctitud depende de la correctitud del algoritmo de Dijkstra . 
+    Ademas con los teoremas 1 , 2 y 3  antes enunciados y demostrados nos grarantiza que la soluci\'on que se presenta da el resultado correcto. 
+    Nuestro algoritmo termina , pues el algoritmo de Diskjstra termina , (esto se demuestra en el an\'alisis de este algoritmo)  , ademas como el grafo es 
+    finito recorrer todos los v\'ertices en alg\'un momento no habran mas v\'ertices que preocesar (teniendo en cuenta que cada v\'ertice es analizado una sola vez)  . 
+
+
+
+
+    \section{Algoritmo de Dijkstra}
+
+    \noindent El algoritmo de Dijkstra calcula la menor distancia desde un v\'ertice inicial hasta todos los demas vertices del Grafo  
+
+    \subsection{Seudoc\'odigo del algoritmo de Dijkstra} 
+
+        \begin{algorithm}[h]
+            \caption{\textit{Dikjstra's algorithm}}
+            \begin{algorithmic}[1]      
+            \State $\lambda \left(s \right) \leftarrow 0 $
+            \State $Q \leftarrow \{s\}$
+            \State $P \leftarrow \emptyset $
+
+            \While {$Q \neq \emptyset $}
+                    \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
+                    \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
+                    \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
+                    \ForAll {$<u,v>$}
+                        \If {$u \in Q $}
+                            \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
+                        \Else
+                            \If {$u \notin P$} 
+                                \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
+                                \State $ Q \leftarrow  Q \cup \{u\}$
+                            \EndIf
+                        \EndIf 
+                    \EndFor
+            \EndWhile 
+            \end{algorithmic}
+        \end{algorithm}
+
     
     \subsection*{Lema 1}
-        \textit{Cuando al algoritmo de Diskjstra se aplica sobre un grafo finito $G\left(V,E\right)$ este termina} 
+        \noindent  \textit{Cuando al algoritmo de Diskjstra se aplica sobre un grafo finito $G\left(V,E\right)$ este termina} 
 
-    \textbf{Demostracion } 
-        Este algoritmo trabaja basicamente sobre la cola $Q$ de vertices 
-        Cada vertice $v$ entra a la cola $Q$ a lo sumo una vez , esto lo podemos ver claramente en la 14 donde primero se pregunta si el vertice a incluir en 
-        la cola $Q \notin P $ .Aqui la relacion de los conjuntos $P$ y $Q$ es que una vez que un vertice es escogido como el de menor "peso" este sale de la cola 
+        \vspace{0.5cm} 
+        \noindent \textit{\textbf{Demostracion } }
+        \\*
+        \noindent Este algoritmo trabaja basicamente sobre la cola $Q$ de v\'ertices 
+        Cada v\'ertice $v$ entra a la cola $Q$ a lo sumo una vez , esto lo podemos ver claramente en la linea 14 donde primero se pregunta si el v\'ertice a incluir en 
+        la cola $Q \notin P $ .Aqui la relacion de los conjuntos $P$ y $Q$ es que una vez que un v\'ertice es escogido como el de menor "peso" este sale de la cola 
         $Q$ y pasa a ser parte del conjunto $P$ . 
         \\*
         Luego una vez que un vertice es escogido en la linea 5 este sale inmediatamente de la cola $Q$ y entra en el conjunto $P$ . 
         \\*
-        Luego un vertice $v$ no puede entrar mas de una vez a $Q$ . por lo que una vez que la linea 5 se haya ejecutado $|V| $ veces (donde $V$  es el conjunto de vertices del grafo $G$)
+        Luego un v\'ertice $v$ no puede entrar mas de una vez a $Q$ . por lo que una vez que la linea 5 se haya ejecutado $|V|$ veces el algoritmo termina su ejecuci\'on (donde $V$  es el conjunto de v\'ertices del grafo $G$)
     
     \subsection*{Lema 2} 
-        \textit{Durante la ejecucion del algoritmo de Dijkstra cada v\'ertice accesible desde $s$ queda marcado , ($\lambda (v)$toma un valor) }
+        \noindent \textit{Durante la ejecuci\'on del algoritmo de Dijkstra cada v\'ertice accesible desde $s$ queda marcado , ($\lambda (v)$toma un valor) }
+        
+        \vspace{0.5cm}
+        \noindent \textit{\textbf{Demostraci\'on}}
+        \\*
+        Vamos a suponer que existe un v\'ertice $v$ que es accesible desde $s$
+        y que el valor de $\lambda\left(v\right)$ nunca cambia 
+        \\*
+        Como $v$ es accesible desde $s$ entonces existe un camino $\mathcal{P} $
+        que va de $s$ a $v$ . vamos a denotar a $u$ como el primer v\'ertice en 
+        el camino $\mathcal{P}$ para el cual el valor de $\lambda$ no cambio
+        durante la ejecucion del algoritmo . Y ahora vamos a denotar $w \xrightarrow[]{e} u$ 
+        tal que  $\lambda\left(w\right)$ cambio . Entonces en alg\'un punto de la 
+        ejecucion del algoritmo el v\'ertice $w$ fue procesado eventualmente para
+        salir de la cola $Q$ y con esto la arista $w \xrightarrow[]{e} u$  es procesada y por
+        lo tanto el valor de $\lambda\left(u\right)$ cambia 
+        \\*
+        Luego hemos encontrado una contradicci\'on , habiamos supuesto que 
+        $\lambda\left(u\right)$ nunca cambi\'o , pero hemos encontrado que en alg\'un 
+        punto de la ejecuci\'on del algoritmo su valor cambio 
+        \\*
+        Con esta proceso como $v$ esta en el camino $\mathcal{P}$ en alg\'un punto 
+        su valor cambia , poque sino entonces encontrariamos una contradiccion como 
+        la anterior . 
+        \\*
+        Luego si $v$ es accesible desde $s$ entonces al aplicar el algoritmo de Dijkstra
+        el valor de $\lambda\left(v\right)$ cambia.
+        
+    \subsection*{Lema 3}
+
+        \noindent \textit{En cualquier momento durante la ejecucion del algoritmo de Diskstra si 
+        para un vertice $v $ cambia  su valor de $\lambda\left(v\right)$ entonces existe 
+        un camino desde $s$ hasta $v$ cuya longitud es $\lambda\left(v\right)$}
+
+        \vspace{0.5cm}
+        \noindent\textit{\textbf{Demostraci\'on}}
+        \\*
+        Vamos a hacerlo por inducci\'on en el momento en que es modificado el valor de~$\lambda$
+        \\*
+        \noindent La primera asignaci\'on ocurre en la linea 1 , donde $\lambda\left(s\right)$ toma valor $0$ 
+        y en efecto podemos ver que existe un camino de longitud $0$ desde el v\'ertice $s$ hasta el propio 
+        v\'ertice  $s$ (un camino vac\'io ). 
+        \\*
+        Ahora en cada asignaci\'on o reasignaci\'on que se le hace a $\lambda$ en el momento $t$ 
+        y asumiendo que en todas las reasignaciones anteriores se cumple la hip\'otesis  . 
+        \\*
+        Vamos a asumir que a un v\'ertice $u$ su valor de $\lambda\left(u\right)$ cambia por primera vez . 
+        Entonces el valor asignado a $v$ fue antes del momento $t$  . 
+        \\*
+        Por hipotesis de inducci\'on existe un camino que va de $s$ a $v$ de longitud $\lambda\left(v\right)$. 
+        Si a ese camino le adicionamos la arista $u \xrightarrow[]{e} v $ entonces es un camino desde $s$ hasta $u$ 
+        de longitud $\lambda\left(u\right)$
+        \\[5pt] 
+        Para el caso en que el valor de $u$ es reasignado (o sea que no fue la primera vez que le es
+        asignado un valor a $\lambda\left(u\right)$ ) pudemos encontrar el camino de longitud
+        $\lambda\left(u\right)$ de la misma manera .
+        \\[5pt]
+        Vamos a denotar a $\delta \left(v\right)$ como la menor distancia de $s$ a $v$ entonces 
+        tenemos que: 
+        \begin{equation*}
+            \lambda\left(v\right) \geq \delta\left(v\right)
+        \end{equation*}
+
+        \vspace{1cm} 
+
+        \newtheorem{thm1}{Teorema}
+        \begin{thm1}
+            \textit{Cuando el algoritmo de Dijkstra termina para cada v\'ertice $v$ accesible desde $s$ se cumple  que : }
+        \end{thm1}
+
+        \begin{equation*}
+            \lambda\left(v\right) = \delta\left(v\right)
+        \end{equation*}
+
+        \noindent \textit{\textbf{Demostracion}}
+        \\* 
+        Si v es accesible desde $s$ entonces por lo demostrado 
+        anteriormente $\lambda\left(v\right) < \infty$  . Y por el lema 3  tenemos que  
+        $\lambda\left(v\right) \geq \delta\left(v\right)$  . Solo falta demostrar que 
+        $\lambda\left(v\right) \leq \delta\left(v\right)$
+        \\*
+        Vamos a hacer la demostraci\'on por inducci\'on en el orden en que los v\'ertices pasan 
+        al conjunto $P$ 
+        \\*
+        Vamos a denotar a $\mathcal{P}$ como un camino m\'inimo de $s$ a $v$ y Vamos a denotar 
+        a $t$ como el momento cuando el vertice $v$ es escogido para unirse al conjunto $P$ .
+        En este momento $t$ , el vertice $s$ esta en $P$ pero $v$ no lo esta . 
+        \\*
+        Pero debe existir una arista $u \xrightarrow[]{e}w $ en $\mathcal{P}$ tal que $u \in P $ pero 
+        $w \notin P$ 
+        \\* 
+        Como todas las aristas tienen peso positivo , el subcamino de $\mathcal{P}$ desde $w$ 
+        a $v$ tiene longitud positiva entonces : 
+        \begin{equation*}
+            \delta \left(v\right) \geq \delta\left(w\right)
+        \end{equation*}
+        Cada subcamino de un camino de longitud m\'inima es de longitud m\'inima . Entonces el 
+        subcamino de $\mathcal{P}$ que va desde $s$ hasta $w$  es de longitud m\'inima y su longitud 
+        esta dada por la longitud del camino de longitud m\'inima desde $s$ hasta $u$ mas el peso de la 
+        arista $e$ ($l\left(e\right)$) , esto es : 
+        \begin{equation*}
+            \delta\left(w\right) = \delta\left(u\right) + l\left(e\right)
+        \end{equation*}
+        Tenemos que $u$ se introdujo en $P$ antes del tiempo $t$ , por la hipotesis de induccion 
+        $\delta\left(u\right) \geq \lambda\left(u\right)$ .Entonces 
+        \begin{equation*}
+            \delta\left(u\right) + l\left(e\right) \geq \lambda\left(u\right) + l\left(e\right)
+        \end{equation*} 
+        Como $u$ entro en $P$ antes del tiempo $t$ todos sus adyacentes fueron examinados, incluyendo
+        a la arista $u \xrightarrow[]{e}w$ . Entonces en al momento $t$ , $\lambda\left(w\right)$ fue asignada y por 
+        lo tanto 
+        \begin{equation*}
+            \lambda\left(u\right) + l\left(e\right) \geq \lambda\left(w\right)
+        \end{equation*} 
+        Sin embargo , en el momento $t$ , $v$ ha sido el escogido para unirse a $P$ , no  $w$ . entonces : 
+        \begin{equation*}
+            \lambda\left(w\right) \geq \lambda\left(v\right)
+        \end{equation*}
+        Entonces podemos decir que todas las anteriores afirmaciones implican que en el momento $t$ 
+        \begin{equation*}
+            \delta\left(v\right) \geq \lambda\left(v\right)
+        \end{equation*}
+
+
+
+    
+    \subsection{Complejidad Temporal }
+        \noindent Durante la ejecuci\'on del algoritmo de Dijkstra cada v\'ertice entra en $Q$ a lo sumo una vez y cada v\'ertice que entra en $Q$ sale 
+        una vez que es escogido en la linea 5 . Entonces la ejecuci\'on de la linea 5 se realiza a lo sumo $\vert V \vert$ veces por lo que su complejidad 
+        de ejecuci\'on toma $O\left(\vert V \vert\right)$ . La suma total del tiempo de ejecuci\'on de la linea 8 - 14 para cada v\'ertice escogido es de $O\left(\vert E \vert\right)$. 
+        No hay aristas examinadas m\'as de una vez . Esto quiere decir que el tiempo de ejecuci\'on del algoritmo de Dijkstra es de $O\left(\vert V \vert ^ 2 + \vert E \vert \right)$
+        
+        
 
 \end{document}

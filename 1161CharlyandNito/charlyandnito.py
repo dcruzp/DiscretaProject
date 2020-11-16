@@ -74,7 +74,7 @@ distanciaB = []
 visitado = [] 
 J,B,C,N,S = 0,0,0,0,0
 
-def init  (distancia ):
+def init (distancia ):
     visitado.clear()
     i = 0 
     while i < MAX : 
@@ -108,6 +108,11 @@ def dijkstra (inicial ,distancia):
 
 
 def solucion ():
+
+    dijkstra(B-1,distanciaB)
+    dijkstra(C-1,distanciaC)
+    dijkstra(N-1,distanciaN)
+    
     distC = distanciaB[C-1] 
     distN = distanciaB[N-1]
     j = 0 
@@ -149,12 +154,6 @@ if __name__ == '__main__':
             g.agregarArista(E2-1,E1-1,L)
             i = i + 1
         
-        #for v in g : 
-        #    for w in v.obtenerConexiones():
-        #        print ( "( %s , %s , %s )" % (v.obtenerId()+1 , w.obtenerId()+1 , v.obtenerPonderacion(w)))
         
-        dijkstra(B-1,distanciaB)
-        dijkstra(C-1,distanciaC)
-        dijkstra(N-1,distanciaN)
 
         solucion() 
