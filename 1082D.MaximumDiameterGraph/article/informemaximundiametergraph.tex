@@ -1,0 +1,144 @@
+\documentclass[10pt]{article}  
+
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref} 
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{makeidx} 
+
+\definecolor {bg} {rgb}{0.95,0.95,0.95}
+
+\usetikzlibrary{positioning,arrows.meta}
+\usetikzlibrary{shapes,snakes}
+
+\begin{document}
+    \title{1082 - Maximum Diameter Graph}
+    \author{Daniel de la Cruz Prieto}
+    \date{\today}
+    \maketitle
+
+    \begin{abstract}
+        \noindent En este art\'iculo se hace un analisis completo , 
+        algoritmico para la solucion del ejercicio del Juez en 
+        l\'inea \href{https://codeforces.com}{\textcolor{blue}{CodeForce}} 
+        si quiere entrar directamente al link del problema 
+        \href{https://codeforces.com/problemset/problem/1082/D}{\textcolor{blue}{click aqui}} 
+        . En este articulo se muestra un analisis algoritmico , de tiempo y correctitud del 
+        algoritmo usado para resolver el problema 
+    \end{abstract}
+
+    \section*{Descripci\'on del Problema } 
+    
+    \begin{flushleft}
+        Los problemasconstructivos de gr\'aficos est\'an de vuelta!Esta vez, el gr\'afico que se le pide que cree debe coincidir con las siguintes propiedades.
+    \end{flushleft}
+
+    \begin{flushleft}
+       El gr\'fico est\'a conectado si y solo si existe una ruta entre cada par de v\'ertices.
+    \end{flushleft}
+
+    \begin{flushleft}
+        El di\'ametro (tambi\'en conocido como "camino m\'as largo y corto") de un gr\'afico no dirigido conectado es el n\'umero maximo de aristas en el camino {\bf m\'as corto} entre cualquier par de sus v\'ertices.
+    \end{flushleft}
+
+    \begin{flushleft}
+       El grado de un v\'ertice es el n\'umero de aristas que le inciden.
+    \end{flushleft}
+
+    \begin{flushleft}
+        Dada una secuencia de $n$ enteros $a_1,a_2,\dots,a_n$ construya una gr\'afica {\bf no dirigida conectada} de v\'ertices $n$ tal que:$n$ enteros $a_1,a_2,\dots,a_n$ construir un $n$ v\'ertices tales que:
+    \end{flushleft}
+
+    \begin{itemize}
+        \item El gr\'afico no contiene bucles ni bordes m\'ultiples;
+        \item El grado $d_i$ del $i$ -th v\'ertices no excede $a_i$ (es decir, $d_i\le a_i$);$d_i$ del $i$-th v\'ertice no exeda $a_i$(es decir $d_i \neq a_i$);
+        \item El di\'ametro del gr\'afico es el m\'aximo posible.
+    \end{itemize}
+    
+    \begin{flushleft}
+       Genere el gr\'avico resultante o informe q no existe una soluci\'on.
+    \end{flushleft}
+
+    \begin{flushleft}
+        {\bf Especificaci\'on de la entrada }
+    \end{flushleft}
+
+    \begin{flushleft}
+       La primera l\'inea contiene un solo entero $n(3\leq n \leq 500) $ el numero de v\'ertices del gr\'afico. 
+    \end{flushleft}
+
+    \begin{flushleft}
+        La segunda l\'inea contiene n integers $a_1,a_2,\dots,a_n$($1\leq a_i \leq n-1$) los l\'imites superiores a los grados de v\'ertice.
+    \end{flushleft}
+
+    \begin{flushleft}
+        {\bf Especificaciones de la Salida}
+    \end{flushleft}
+
+    \begin{flushleft}
+        Imprima "NO" si no se puede contruir un gr\'afico en las condiciones dadas.
+    \end{flushleft}
+    
+    \begin{flushleft}
+        De lo contrario, imprima "SI" y el di\'ametro del gr\'afico resultante en la primera l\'inea.
+    \end{flushleft}
+    
+    \begin{flushleft}
+        La segunda l\'inea debe contener un solo entero $m$- el n\'umero de aristas en el gr\'afico resultante.
+    \end{flushleft}
+
+    \begin{flushleft}
+        Los $i-esimos$ del siguiente $m$ las l\'ineas deben contener dos enteros $v_i,u_i(1\leq v_i,u_i\leq  n, v_i \neq u_i)$-la descripci\'on del $i-th$ borde. El gr\\'afico no debe contener m\'ultiples aristas, para cada par($x,y$) emites,no deber\'ias generar m\'as pares ($x,y$) o ($y,x$)
+    \end{flushleft}
+
+    \noindent \textbf {Ejemplo de entrada 1} 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        3
+        2 2 2
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de salida 1} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+       SI 2
+       2 
+       1 2
+       2 3
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de entrada 2} 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        5
+        1 4 1 1 1
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de salida 2} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+       SI 2
+       4
+       1 2
+       3 2
+       4 2
+       5 2
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de entrada 3} 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        3
+        1 1 1 
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de salida 3} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+        NO
+    \end{minted}
+
+\end{document}
+
+

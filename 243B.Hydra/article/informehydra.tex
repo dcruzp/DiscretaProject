@@ -3,14 +3,12 @@
 \usepackage[spanish,es-noshorthands]{babel}
 \usepackage{tikz}
 \usepackage{minted}
-
-\usepackage{algpseudocode}
-\usepackage{algorithm}
-\usepackage{verbatim}
-\usepackage{listings} 
-
 \usepackage[hidelinks]{hyperref} 
 \usepackage{color}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{makeidx} 
 
 \definecolor {bg} {rgb}{0.95,0.95,0.95}
 
@@ -29,13 +27,13 @@
     \maketitle
 
     \begin{abstract}
-        \noindent En este art\'iculo se expone la solucion del problema B.Hydra del juez online \href{https://codeforces.com/} { \textcolor{blue}{CodeForce} }  
-        si quiere ir directo al problema \href{https://codeforces.com/problemset/problem/243/B}{\textcolor{blue}{click aqui}} . En el articulo se da una soluci\'on al problema , adem\'as de 
-        demostrar la correctitud del algoritmo y la complejidad temporal del mismo . Al final del articulo se expone el codigo en python de la solucion del prblema   
+        \noindent En este art\'iculo se expone la soluci\'on del problema B.Hydra del juez online \href{https://codeforces.com/} { \textcolor{blue}{CodeForce} }  
+        si quiere ir directo al link del problema \href{https://codeforces.com/problemset/problem/243/B}{\textcolor{blue}{click aqui}} . En el art\'iculo se da una soluci\'on al problema , adem\'as de 
+        demostrar la correctitud del algoritmo y la complejidad temporal del mismo . Al final del articulo se expone el c\'odigo en python de la soluci\'on del problema   
     \end{abstract}
 
-    \vspace{1cm}
-    \noindent \textcolor{blue}{\Large \underline{Orden del problema } }
+    
+    \section*{Orientaci\'on del Problema }
     \begin{flushleft}
         Un d\'ia Petya recibi\'o un regalo de cumplea\~nos de su mam\'a, un libro llamado "Leyes y mitos de la Teor\'ia de Grafos". De este libro Petya aprendi\'o acerca de los grafos Hydra.
         \\*
@@ -103,25 +101,25 @@
     \vspace{1cm}
     \noindent \textcolor{black}{\Large Entrada }
     \begin{flushleft}
-        La primera linea contine cuatro enteros n,m,h,t $\left(1\leq n,m\leq {10}^{5} , 1 \leq h , t,\leq 100\right)$, el numero de los nodos y las 
-        aristas en el grafo \textit{G} y el n\'umero de la cabeza del Hydra y la cola .
+        La primera linea contine cuatro enteros n,m,h,t $\left(1\leq n,m\leq {10}^{5} , 1 \leq h , t,\leq 100\right)$, el n\'umero de nodos y las 
+        aristas en el grafo \textit{G} y el n\'umero de la cabeza del Hydra y la cola.
         \\*
         Las proximas m lineas continen la descricion de las aristas del grafo \textit{G} . La $i-esima$ de esas lineas 
-        continen dos enteros $a_i$ y $b_i$ , $\left(1 \leq a_i , b_i \leq n , a \neq b\right)$ el numbero de los nodos conectados por la $i-esima$ arista 
+        continen dos enteros $a_i$ y $b_i$ , $\left(1 \leq a_i , b_i \leq n , a \neq b\right)$ el n\'umero de los nodos conectados por la $i-esima$ arista. 
         \\*
-        Se garantiza que el grafo \textit{G} no contine lazos ni aristas multiples . Considera los nodos del grafo \textit{G} numerados desde 1 hasta n  
+        Se garantiza que el grafo \textit{G} no contine lazos ni aristas multiples . Considera los nodos del grafo \textit{G} numerados desde 1 hasta n.  
     \end{flushleft}
 
     \vspace{0.5cm}
     \noindent \textcolor{black}{\Large Salida }
     \begin{flushleft}
-        Si el grafo \textit{G} no contiene un hydra entonces imprimir -NO-
+        Si el grafo \textit{G} no contiene un hydra entonces imprimir -NO-.
         \\*
-        En otro caso , en la primera linea imprimir -YES- . En la segunda linea imprimir dos enteros  - los numeros de los nodos u y v . 
-        En la tercera linea imprimir h numeros  - los numeros de los nodos que son la cabeza  . En la cuarta linea imprimir t numeros  - los numeros de los nodos que son los pies . 
-        Todos los numneros que se impriman deben de ser distintos 
+        En otro caso , en la primera linea imprimir -YES- . En la segunda linea imprimir dos enteros  - los n\'umeros de los nodos u y v. 
+        En la tercera linea imprimir h n\'umeros  - los n\'umeros de los nodos que son la cabeza. En la cuarta linea imprimir t n\'umeros  - los n\'umeros de los nodos que son los pies. 
+        Todos los n\'umeros que se impriman deben de ser distintos.
         \\*
-        Si hay multiples posibles respuestas , tienes permitido imprimir cualquiera de ellas   
+        Si hay m\'ultiples posibles respuestas , tienes permitido imprimir cualquiera de ellas.   
     \end{flushleft}
 
     \noindent \textbf{\Large Ejemplo 1}
@@ -201,48 +199,147 @@
       \end{algorithm}
 
     
-    \paragraph*{Idea basica para resolver el algoritmo } 
-    Tenemos que dado un grafo G y dos entros h y t determinar si 
+    \section{An\'alisis del problema }
+
+    \subsection{Dicuci\'on de lo que nos piden en el problema } 
+    \noindent Tenemos que dado un grafo G no dirigido y dos entros h y t determinar si 
     existe alguna estuctura de la forma descrita en la orden del ejercicio. 
-    Esto seria encontrar dos vertices u , v adyacentes y 
+    Esto ser\'ia encontrar dos v\'ertices u , v adyacentes y 
     dos conjuntos independientes \textit{head} y \textit{tail } 
-    de cardinalidad h y t respectivamente , u ni v pueden estar 
-    incluidos en los conjuntos \textit{tail} ni en el conjunto \textit{head} 
-    tal que todo los elementos del conjunto \textit{head} sean 
-    adyacentes a u y todos los  elementos del conjunto \textit{tail } sean adyacentes a v 
+    de cardinalidad h y t respectivamente ,donde ni el v\'ertice u ni el v\'ertice v pueden estar 
+    incluidos en los conjuntos \textit{tail} ni en el conjunto \textit{head}. 
+    Tambi\'en se tiene que cumplir que todo los v\'ertice  del conjunto \textit{head} sean 
+    adyacentes a u y todos los  v\'ertices del conjunto \textit{tail } sean adyacentes a v.
 
      
 
-    \hspace*{0.5cm} 
-
-    \begin{flushleft}
-        Voy a recorrer todas las aristas del grafo G y voy a analizar si 
-        esta puede ser la arista que conforma el "cuerpo del hydra"  vamos a 
-        denotarla arista e y a los extremos de la arista (los v\'ertices que une) 
-        los vamos a llamar u , v para esto vamos a usar la notaci\'on  $u - v$
-    \end{flushleft}
-
-    \textbf{Vamos a dividr el analisis de la arista $u-v$}
-
-    \paragraph*{Caso 1 } Si $deg (u) <  h +1$   o el $deg(v) < t+1 $ entonces no hay forma posible 
-    de que esta arista forme parte del "cuerpo de hydra "
+    \subsection*{Ideas para la resoluci\'on del problema }
     
-    \paragraph*{Caso 2 } Aqui si tenemos en cuenta que el {\bf Caso 1} no se cumple es porque 
-    $deg (u) >= h+1 $ y el $deg(v) >= t+1$  . Este caso lo vamos a partir en 2 . el primer subcaso seria que 
-    $deg (u) >= h+t+1$ , aqui si tenemos tambien la condicionante de que $deg (v) >= t+1$ (resultado de que el {\bf caso 1} fuera falso  ) Entonces es posible 
-    encontrar los subconjuntos independientes \textit{head}  y \textit{tail } de cardinalidad $h$ y $t$ respectivamente , pues en el peor de los escenarios  que es que 
-    todos los adyacentes de v tambien sean adyacentes de u , es posible particionar de forma tal que los subconjuntos se puedan escoger de forma independiente , es segundo 
-    subcaso seria $deg(v) > h+t+1$ , que se puede tomar la misma idea del otro subcaso 
-
-    \paragraph*{Caso 3} Teniendo en cuenta que ninguno de los casos anteriores se cumplio es 
-    porque se cumple que $h+1 \leq deg(u) \leq h + t + 1 $ y que $t+1 \leq deg(v) \leq h + t + 1 $
-    luego habria que determinar aqui si existe o no la estructura que estamos buscando 
+    \noindent La primera idea que se me ocurri\'o para hacer esto fue recorrer todas 
+    las aristas del grafo y ver si podia conformar un Hydra donde la arista que estaba 
+    analizando era el Hydra del Grafo .
     \\*
-    Aqui en este caso podemos podar la no existencia con una pregunta :
-    Si definimos a U como el conjunto de vetices que son adyacentes a u y a v sin incluir a estos dos 
-    entonces podemos saber cuantos de estos v\'ertices que pertenecen a U van a ser necesarios a la hora de 
-    conformar los conjuntos head y tail y si esta cantidad es mayor que la cardinalidad del conjunto U entonces no es posible 
-    encontrar la estructura que queremos 
+    Luego de pensar el ejercicio de esta forma empece a analizar de que forma pod\'ia armar un Hydra 
+    en el un grafo dado con la idea anterior  .
+
+    \section{Soluci\'on del Problema }
+
+    \noindent Voy a recorrer todas las aristas del grafo G y voy a analizar si 
+    esta puede ser la arista que conforma el "cuerpo del hydra"  vamos a 
+    denotarla arista e y a los extremos de la arista (los v\'ertices que une) 
+    los vamos a llamar u , v para esto vamos a usar la notaci\'on  $u \leftrightarrow v$.
+    Entonces el an\'alisis de una arista $e$ lo vamos  a hacer de la siguiente manera. 
+    
+
+    \subsection{An\'alisis de la arista e}
+
+    \noindent Vamos a analizar la arista $e$ de forma tal que vamos a asumir que para nuestro an\'alisis la arista $e$ 
+    es tomada en el siguiente sentido $u\xrightarrow[]{e}v$ y analizar si el extremo $u$ de la arista puede formar 
+    la "cabeza" del Hydra (o sea que los v\'ertices adyacentes a $u$ que estoy buscando sean los que conformen el conjunto 
+    \textit{head}) y el extremo $v$ sea el adyacente a los v\'ertices que conforman el \textit{tail} . Como el grafo es no 
+    dirigido hay que analizar tambien el otro sentido de la arista , es decir considerar a $e$ de la forma $v\xrightarrow[]{e}u$ 
+
+    \noindent Vamos a ir descartando el an\'alisis de algunas aristas y tratar de buscar la posible o no soluci\'on
+    en otras que cumplan ciertos requisistos y para esto  voy a dividir el an\'alisis por casos
+
+    \subsubsection{An\'alisis de casos } 
+
+    \begin{itemize}
+        \item \textit{\textbf {Caso 1 }} Si $deg (u) <  h +1$   o el $deg(v) < t+1 $ entonces no hay forma posible 
+        de que esta arista forme parte del "cuerpo de hydra " . Es decir no puedo encontrar los conjuntos \textit{head} y 
+        \textit{tail} de carinalidad h y t respectivamente porque $u$ y $v$ no tienen las los adyacentes necesarios para armar estos 
+        conjuntos con las especificaciones que discutimos arriba 
+
+        \item  \textit{\textbf {Caso 2}} Aqu\'i si llegamos a este an\'alisis es porque suponemos que el caso uno fue analizado. 
+        Luego si el  \textit{Caso 1} no se cumple es porque las condiciones $deg (u) \geq h+1 $ y  $deg(v) \geq t+1$ se cumplen ambas a la vez.
+        Teniendo en cuenta esto vamos ahora a analizar lo siguiente: 
+        Si suponemos ahora que $deg (u) \geq h+t+1$  Entonces es posible  encontrar los subconjuntos independientes \textit{head}  y \textit{tail } de cardinalidad $h$ y $t$ respectivamente que
+        nos piden en el ejercicio , pues en el peor de los escenarios  que es que todos los adyacentes de $v$ tambi\'en sean adyacentes de $u$ pero $u$ tiene suficientes adyacentes para particionar
+        de forma tal que sea posible escoger los subconjuntos con las restricciones que analizamos arriba
+        \\*
+        En el caso en que no se cumpla que $deg (u) \geq h+t+1$ podemos analizar si $deg(v) \geq h+t+1$ , donde se puede formar de igual manera los conjuntos que andamos buscando 
+        
+        \item  \textit{\textbf{Caso 3}} Teniendo en cuenta que n\'inguno de los casos anteriores se cumpli\'o es 
+        porque se cumple que $h+1 \leq deg(u) \leq h + t  $ y adem\'as se cumple que $t+1 \leq deg(v) \leq h + t  $
+        luego habr\'ia que determinar aqui si existe o no la estructura que estamos buscando 
+        \\*
+        En este caso podemos comprobar la no existencia de un hidra de la siguiente manera :
+        Si definimos a $U$ como el conjunto de v\'etices que son adyacentes a $u$ y a $v$ sin incluir a estos dos (porque si estamos analizando
+        esto es porque esiste una arista que conecta a $u$ con $v$ ) , y en las restricciones del problema nos dicen 
+        que $u$ y $v$ no pueden pertenecer a los conjunto  que estamos buscando, entonces podemos saber cu\'antos de estos v\'ertices
+        que pertenecen a $U$ van a ser necesarios a la hora de conformar los conjuntos \textit{head} y \textit{tail} y si esta cantidad 
+        es mayor que la cardinalidad del conjunto $U$ entonces no es posible  encontrar la estructura que queremos. 
+    \end{itemize}
+
+
+    \subsection{An\'alisis detallado del Caso 2}
+
+    \noindent ?` La pregunta aqu\'i ser\'ia como formar los conjuntos que nos piden si se cumple que $deg (u) \geq h+t+1$  y que $deg(v) \geq t+1$ ? 
+    La idea es recorrer todos los adyacentes de $v$ y escoger $t$ v\'ertices de estos para armar el conjunto \textit{tail} y marcarlos para saber
+    que ya forman parte del conjunto \textit{tail}  , despues recorro los adyacentes de $u$ y escojo t de estos que no se hayan escogidos para el
+    conjunto \textit{tail} , esto se puede hacer perfectamente pues $u$ tiene suficientes adyacentes para escoger y armar el \textit{head} una vez sea
+    hayan escogidos los v\'ertices del \textit{tail} . 
+    \\*
+    Es importante aqu\'i hacerlo en el orden en que lo describ\'i (primero el \textit{tail} y despu\'es el \textit{head}), pues  si se hace en el otro orden 
+    puede ocurrir que todos los que escog\'i para conformar el \textit{head} sean todos los comunes  o gran parte de ellos  (adyacentes a $u$ y a $v$ a la vez), 
+    y despues cuando vaya aconformar el \textit{tail} no pueda hacerlo porque me faltan por escoger y los restantes ya hayan sido escogidos para conformar el \textit{head}. 
+    Sin embargo esto no ocurre si primero escojo los vertices del \textit{tail } y despues los v\'ertices del \textit{head}
+    \\*
+    El mismo procedimiento se puede hacer para el caso en que $deg (v) \geq h+t+1$ y $deg(u) \geq h+1$ . Siempre tenemos que tener en cuenta primero escoger 
+    (en este caso ) primero el \textit{head} y despues el \textit{tail} 
+    
+
+    \subsection{An\'alisis detallado del caso 3}
+
+    \noindent Si Llegamos al caso 3 tenemos que se cumple que  $h+1 \leq deg(u) \leq h + t  $ y adem\'as se cumple que $t+1 \leq deg(v) \leq h + t  $
+    \\*
+    ?`Como saber si existe un Hydra en este caso o no ? 
+    \\*
+    Primero vamos a analizar un caso en el que no puede existir un Hydra . Y la idea es la siguiente: 
+    Vamos a denotar a $C$ como el conjunto formado por los  adyacentes a $u$ que son tambi\'en adyacentes de $v$ .
+    \\* 
+    Vamos a denotar a $IndU$ como el conjunto de adyacentes de $u$ que no est\'an en $C$ , ($v \notin IndU$) 
+    \\*
+    Y vamos a denotar a $IndV$ como el conjunto de adyacente de $v$ que no est\'an en $C$ , ($u \notin IndV$)
+    \\*
+    Si se cumple que $ h -\vert IndU \vert  +  t - \vert IndV \vert > \vert C \vert $ entonces no se puede armar un Hydra . Porque la cantidad de v\'ertices necesarios 
+    que tengo que escoger que son comunes para formar el \textit{tail } y el \textit{head} es mayor que la cantidad de v\'ertices que estos comparten en com\'un. 
+    \\[5pt] 
+    En caso que lo que analizamos antes no se cumpla entonces si podemos escoger el \textit{head} y el \textit{tail} 
+    \\*
+    ?` como hacemos esto ? 
+    \\*
+    Si grarantizamos que a la hora de escoger el conjunto \textit{tail} no escogemos una cantidad de  v\'ertices superior a los que son necesarios escoger del conjunto $C$ para formar el \textit{tail} entonces 
+    estamos garantizando que vamos a poder despu\'es escoger el \textit{head} sin ning\'un impedimento , Igual pasa si escogemos primero los v\'ertices que conforman el conjunto \textit{head} 
+
+    \subsection{Seudoc\'odigo del algoritmo de Dijkstra} 
+
+    \begin{algorithm}[h]
+        \caption{\textit{Dikjstra's algorithm}}
+        \begin{algorithmic}[1]      
+        \State $\lambda \left(s \right) \leftarrow 0 $
+        \State $Q \leftarrow \{s\}$
+        \State $P \leftarrow \emptyset $
+
+        \While {$Q \neq \emptyset $}
+            \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
+            \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
+            \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
+                \ForAll {$<u,v>$}
+                    \If {$u \in Q $}
+                            \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
+                        \Else
+                            \If {$u \notin P$} 
+                                \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
+                                \State $ Q \leftarrow  Q \cup \{u\}$
+                            \EndIf
+                        \EndIf 
+                    \EndFor
+            \EndWhile 
+            \end{algorithmic}
+        \end{algorithm}
+
+    
     
     \usemintedstyle{solarized-dark}
     \inputminted[bgcolor = bg ,frame = single , framerule = 3pt, framesep = 5pt , linenos = true ]{python} {../hydra.py}
