@@ -345,7 +345,7 @@
 
     \section{Algoritmo de Dijkstra}
 
-    \noindent El algoritmo de Dijkstra calcula la menor distancia desde un v\'ertice inicial hasta todos los demas vertices del Grafo  
+    \noindent El algoritmo de Dijkstra calcula la menor distancia desde un v\'ertice inicial hasta todos los dem\'as vertices del Grafo  
 
     \subsection{Seudoc\'odigo del algoritmo de Dijkstra} 
 
@@ -514,9 +514,6 @@
             \delta\left(v\right) \geq \lambda\left(v\right)
         \end{equation*}
 
-
-
-    
     \subsection{Complejidad Temporal }
         \noindent Durante la ejecuci\'on del algoritmo de Dijkstra cada v\'ertice entra en $Q$ a lo sumo una vez y cada v\'ertice que entra en $Q$ sale 
         una vez que es escogido en la linea 5 . Entonces la ejecuci\'on de la linea 5 se realiza a lo sumo $\vert V \vert$ veces por lo que su complejidad 
@@ -524,5 +521,124 @@
         No hay aristas examinadas m\'as de una vez . Esto quiere decir que el tiempo de ejecuci\'on del algoritmo de Dijkstra es de $O\left(\vert V \vert ^ 2 + \vert E \vert \right)$
         
         
+    \section{Mi implementaci\'on}
+    \noindent Primero hice una implementaci\'on en c++ y otra en Python . La implementaci\'on que probe en el juez en line fue la de c++ y la implementaci\'on en Python es una traducci\'on de la implementaci\'on
+    en c++  . que si bien no esta mal la implementacion en python , las herraminetas que utilice puede que no den en un tiempo apropiado como la de c++   
 
+    \subsection{Implementaci\'on  en C++ } 
+    \noindent En mi implementaci\'on en c++ para el algoritmo de Dijkstra use "set" que despues de hacer una busqueda en internet encontre que su implementacion usa 
+    un arbol binario balanceado por altura . Entonces el tiempo de complejidad de operaciones sobre el "set" como insertar , borrar es logaritmica luego el tiempo de 
+    complejidad temporal del algoritmo que implemente es  $O\left(\vert E \vert \cdot \log \left(V\right)\right)$  .  
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = "Dijkstra's implementation " ]{c++}
+        void shortedPath (int start , int distance []) 
+        {
+            init(distance);  
+            Q.insert(make_pair(0,start)); 
+            distance[start] = 0;   
+            while (! Q.empty())
+            {
+                Node tmp = * (Q.begin());  
+                Q.erase(Q.begin()); 
+
+                int curr = tmp.second ;  
+                vector <Node> :: iterator i ;
+                for(i = ady[curr].begin() ; i != ady[curr].end() ; ++i)
+                {
+                    int v = (*i).first ;    
+                    int weight = (*i).second;  
+
+                    if (distance[curr] + weight < distance[v])  
+                    {
+                        if (distance[v] < INF) 
+                        {
+                            Q.erase(Q.find(make_pair(distance[v] , v))); 
+                        } 
+                        distance[v] = distance[curr] + weight ; 
+                        Q.insert(make_pair(distance[v],v)); 
+                    } 
+                }
+            }
+        }
+    \end{minted} 
+
+
+    \noindent La funcion \textit{solution ()} aplica tres veces el algoritmo implementado arriba y despues recorre todos los vertices del grafo . Por lo que 
+    la complejidad temporal del algoritmo es $O\left(3 \cdot \vert E \vert \cdot \log \left(V\right)\right)$ + $O\left(\vert V \vert\right) $
+
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = "Algorithm Solution"]{c++}
+        void solucion()
+        {   
+            shortedPath(B-1,distanciaB); 
+            shortedPath(C-1,distanciaC); 
+            shortedPath(N-1,distanciaN);  
+
+            int distC = distanciaB[C-1]; 
+            int distN = distanciaB[N-1]; 
+            int j = 0 , c =distC , n =distN; 
+
+            for (int i = 0; i < J; i++)
+            {                
+                if (distC == distanciaB[i]+distanciaC[i] && distN == distanciaB[i] + distanciaN[i] && distanciaB[i] > j)
+                {
+                    j = distanciaB[i];  
+                    c = distanciaC[i];  
+                    n = distanciaN[i]; 
+                }
+            }            
+            cout << j << " " << c << " " << n << endl ; 
+        }
+    \end{minted}
+
+    \noindent Aqui voy a poner el l\'ink de donde esta el c\'odigo completo en mi repositorio  , adem\'as de que el codigo aparece en la carpeta donde mismo se encuentra este informe 
+    
+    \subsection{Implementaci\'on  en Python }
+    
+    \noindent Esta implementaci\'on  lejos de estar mal porque es una traduccion exacta del algoritmo que puse arriba  . Si bien puede no ser lo mejor en cuanto a complejidad temporal debido al uso de 
+    librerias que no son muy eficientes a la hora de insertar y  eliminar elementos , cosas necesarias para la implementacion del algoritmo de Dijkstra 
+    
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = "Dijkstra's implementation " ]{Python}
+        def dijkstra (inicial ,distancia):
+        init(distancia)
+        distancia[inicial] = 0
+        priority_queue.put((0,inicial))
+        
+        while not priority_queue.empty():
+            top = priority_queue.get()
+            actual = top[1]
+            vertice_actual = g.obtenerVertice(actual)
+            if visitado[actual]: continue 
+            visitado[actual] = True
+
+            for adyacente in vertice_actual.obtenerConexiones():
+                peso = vertice_actual.obtenerPonderacion(adyacente)
+
+                if not visitado[adyacente.obtenerId()]:
+                    relajacion (actual , adyacente.obtenerId() , peso , distancia)    
+    \end{minted} 
+
+    \noindent El metodo \textit{solution()} expuesto es el mismo que el implementado en c++ . El c\'odigo es el de abajo 
+    
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = "Algorithm Solution"]{Python}
+        def solucion ():
+
+        dijkstra(B-1,distanciaB)
+        dijkstra(C-1,distanciaC)
+        dijkstra(N-1,distanciaN)
+        
+        distC = distanciaB[C-1] 
+        distN = distanciaB[N-1]
+        j = 0 
+        c = distC
+        n = distN
+
+        for i in range (J) :
+            if distC == distanciaB[i] + distanciaC[i] and distN == distanciaB[i] + distanciaN[i] and distanciaB[i] > j :
+                j = distanciaB[i]
+                c = distanciaC[i]
+                n = distanciaN[i] 
+
+        print (str (j) + ' ' + str (c) + ' ' +str(n))
+    \end{minted}
 \end{document}
