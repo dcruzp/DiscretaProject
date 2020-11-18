@@ -312,36 +312,476 @@
     Si grarantizamos que a la hora de escoger el conjunto \textit{tail} no escogemos una cantidad de  v\'ertices superior a los que son necesarios escoger del conjunto $C$ para formar el \textit{tail} entonces 
     estamos garantizando que vamos a poder despu\'es escoger el \textit{head} sin ning\'un impedimento , Igual pasa si escogemos primero los v\'ertices que conforman el conjunto \textit{head} 
 
-    \subsection{Seudoc\'odigo del algoritmo de Dijkstra} 
+    \subsection{Seudoc\'odigo del algor\'itmo} 
 
-    \begin{algorithm}[h]
-        \caption{\textit{Dikjstra's algorithm}}
-        \begin{algorithmic}[1]      
-        \State $\lambda \left(s \right) \leftarrow 0 $
-        \State $Q \leftarrow \{s\}$
-        \State $P \leftarrow \emptyset $
+    \noindent Vamos a anlizar el seudoc\'odigo por partes : 
 
-        \While {$Q \neq \emptyset $}
-            \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
-            \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
-            \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
-                \ForAll {$<u,v>$}
-                    \If {$u \in Q $}
-                            \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
-                        \Else
-                            \If {$u \notin P$} 
-                                \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
-                                \State $ Q \leftarrow  Q \cup \{u\}$
-                            \EndIf
-                        \EndIf 
-                    \EndFor
-            \EndWhile 
-            \end{algorithmic}
-        \end{algorithm}
+    \begin{itemize}
+        \item \textbf{Caso 1} 
+        \begin{algorithmic}
+            \If {$deg\left(u\right) < h+1$ \textbf{or} $deg\left(v\right) < t+1$}  
+                \State \textbf{return} 
+            \EndIf 
+        \end{algorithmic}
+        No es posible la existencia de un Hydra 
+
+        \item \textbf{Caso 2}
+        
+        \begin{algorithmic}
+            \If {$deg\left(u\right) \geq h+t+1$}
+                \ForAll {$a \in Ady \left[v\right]$}
+                    \If{$tail.size == t $}
+                        \State \textbf{break} 
+                    \EndIf
+                    \If{$a==u$}
+                        \State \textit{continue}
+                    \EndIf 
+                    \State $a \leftarrow $ visited 
+                    \State append (tail , a ) 
+                \EndFor 
+                \ForAll {$a \in Ady \left[u\right]$}
+                    \If{$head.size == h $} 
+                        \State\textbf{break}
+                    \EndIf
+                    \If{$a==u$} 
+                        \State \textit{continue} 
+                    \EndIf 
+                    \State $a \leftarrow $ visited 
+                    \State append (head , a ) 
+                \EndFor 
+                \State \textbf{RETURN}
+            \EndIf
+        \end{algorithmic}
+
+        En este subcaso del caso 2 vimos que era posible armar un Hydra y el procedimiento es el descrito en el seudoc\'odigo de arriba 
+        \\*
+        Ahora para el otro subcaso pasa igual solo que debemos escoger primero el \textit{head} y despu\'es el \textit{tail} , el procedimineto 
+        es el descrito en el seudocodigo de abajo  
+        \vspace{0.5cm}
+        \begin{algorithmic}
+            \If {$deg\left(v\right) \geq h+t+1$}
+                \ForAll {$a \in Ady \left[u\right]$}
+                    \If{$head.size == h $}
+                        \State \textbf{break} 
+                    \EndIf
+                    \If{$a==v$}
+                        \State \textit{continue}
+                    \EndIf 
+                    \State $a \leftarrow $ visited 
+                    \State append (head , a ) 
+                \EndFor 
+                \ForAll {$a \in Ady \left[v\right]$}
+                    \If{$tail.size == t $}
+                        \State \textbf{break} 
+                    \EndIf
+                    \If{$a==u$ \textbf {or} \textit{a is visited}}
+                        \State \textit{continue}
+                    \EndIf 
+                    \State append (tail , a ) 
+                \EndFor 
+                \State \textbf{RETURN}
+            \EndIf 
+        \end{algorithmic}
+
+        \item \textbf{Caso 3}
+        
+        Para este caso primero vamos a encontrar los v\'ertices adyacentes que tienen en com\'un $u$ y $v$ y vamos a determinar  $\vert Indu \vert $  y $\vert Indv \vert $ para seber si 
+        es posible armar un Hydra o no 
+        \vspace{0.3cm}
+        \begin{algorithmic}
+            \State \textit{commun} $\leftarrow$ $vertexcommun \left(u,v\right)$ 
+            \State \textit{Indu} $\leftarrow$ $deg\left(u\right) -1 - commun$
+            \State \textit{Indv} $\leftarrow$ $deg\left(v\right) -1 - commun$
+            \If {$h - Indu + t - Indv  > commun$}
+                \State \textit{$restorevisited \left(u\right)$}
+                \State \textbf{Return}
+            \EndIf 
+        \end{algorithmic}
+
+        Para encontrar los v\'ertices en com\'un (m\'etodo \textit{vertcommun()})lo hacemos de la siguiente manera:  
+
+        \begin{algorithmic}
+            \State $commun \leftarrow  0$ 
+            \ForAll{$a \in Ady \left[u\right]$}
+                \If {$a = v$}
+                    \State \textbf{continue}
+                \EndIf
+                \State a $\leftarrow$ visited 
+            \EndFor
+            \ForAll{$a \in Ady \left[v\right]$}
+                \If {\textit{a is visited }}
+                    \State $commun = commun +1 $
+                \EndIf
+            \EndFor
+            \State \textbf{return} \textit{commun} 
+        \end{algorithmic}
+
+        Despu\'es de la llamada al m\'etodo  \textit{vertcommun()} todos los adyacentes $u$ excepto $v$ quedaron visitados
+        \\*
+        Si se cumple la condici\'on   $h - Indu + t - Indv  > commun$ es porque no se puede formar un Hydra , y el metodo en grneral debe terminar aqui , 
+        pero el array \textit{visited} tiene a todos los adyacentes de $u$ marcados como visistados , por lo que necesito revertir esto , y para ello llamo 
+        al m\'etodo \textit{restorevisited ()} cuyo seudoc\'odigo es el de abajo:   
+        
+        \vspace{0.5cm}
+
+        \begin{algorithmic}
+            \ForAll{$a \in Ady \left[u\right]$}
+                \State $a$ $\leftarrow$ $not$ $visited$
+            \EndFor
+        \end{algorithmic}
+
+        Entonces el array qued\'o "l\'impio" para poder analizar otra arista 
+        
+        \vspace{0.3cm} 
+
+        En el caso en que $h - Indu + t - Indv  \leq commun$ es posible armar un Hydra y en el seudocodigo de abajo describe el procedimiento para encontrarlo
+        
+        \begin{algorithmic}
+            \State $count = 0 $ 
+            \ForAll {$a \in Ady\left[v\right]$}
+                \If {$tail.size == t$}
+                    \State \textit{break}
+                \EndIf
+                \If {$a$ is visited \textbf{and} count $<$ $t - Indv $}
+                    \State count = count + 1 
+                    \State append $\left(tail , a \right)$
+                \Else 
+                    \If{a is not visited \textbf{and} a $\neq$ u}
+                        \State append $\left(tail , a \right)$
+                    \EndIf
+                \EndIf 
+            \EndFor 
+            \ForAll{a $\in$ $Ady\left[u\right]$}
+                \If {$head.size == h$}
+                    \State \textbf{break}
+                \EndIf
+                \If{a is not visited }
+                    \State continue 
+                \EndIf
+                \State $append \left(head ,a \right) $
+            \EndFor
+            \State \textbf{Return}
+        \end{algorithmic}
+    \end{itemize}
+
+
+    \section{Correctitud del algoritmo }
+    \noindent EL algoritmo termina pues una vez analizadas todas las arista el algoritmo finaliza , (en caso de encontrar un Hydra )este termina 
+    instanatniamente el analisis de las aristas restantes 
+    \\*
+    Lo mas importante es ver que todos los posibles escenarios estan bien detallados arriba , luego para cada situaci\'on el algoritmo termina dando la 
+    salida esperada .
+    \\*
+    El primer caso es trivial . Lo que habr\'ia que analizar bien  si en el segundo caso y en el tercero el algoritmo se comporta como esperamos . En el segundo caso es sencillo 
+    ver que  si armamos los conjuntos que queremos dar como salida en el orden en que se describe no puede haber contradiccion . Igual pasa con el tercer caso . 
+    \\*
+    Como es un algoritmo constructivo es facil ver todas los posibles escenarios y para cada una de ellos establecer un comportamineto .
+
+
+    \section{Complejidad Temporal }
+
+    \noindent El algoritmo recorre todas las aristas del grafo , como es no dirigido se analizan en los dos sentidos ,  pero al final su complejidad temporal es $O \left(\vert E \vert\right)$.
+    \\*
+    Vamos a analizar la complejidad temporal que requiere aplicar nuestro algoritmo descrito a una arista en espec\'ifico y lo vamos a hacer por cada uno de los casos en que se divide el algoritmo
+    \\*
+    Para el primer caso su complejidad es $O\left(1\right)$
+    \\*
+    Para el segundo caso como lo que hace el algoritmo es recorrer los adyacentes de  u y de v y armar los conjuntos \textit{head} y \textit{tail} esto tiene una complejidad de  $O\left(h+t\right)$ . esto se puede ver pues en cada uno de los recorridos por los adyacentes 
+    de u y de v cuando termina de escoger los conjuntos , el recorrido termina , pues el proceso de inserci\'on en los conjuntos no se realiza mas de $h+t$ veces
+    \\*
+    En el tercer caso primero analizamos los adyacentes de $u$ y de $v$ para saber cuales son v\'ertices en comun , pero una de las condiciones por las que el algoritmo entra en el caso 3 es porque se cumpl\'ia que $deg\left(u\right) \leq h+t$ y el $deg\left(v\right) \leq h+t$ si no hubiese ca\'ido en el segundo caso , 
+    Luego el procedimiento para saber la cantidad de v\'ertices en  com\'un tiene una complejidad de $O\left(h+t\right)$  
+    \\*
+    En caso de no ser posible encontrar un Hydra entonces revertir los v\'ertices que fueron masrcados como vistitados tiene una complejidad temporal de $O\left(h+t\right)$
+    \\*
+    Y si es posible armar el hydra entonces tenemos la misma complejidad temporal que el caso 2 . 
+    \\*
+    Por lo que la complejidad temporal del algoritmo en general es $O\left(\vert E \vert \cdot \left(h+t\right)\right)$ 
+
+    \section{Mi implementaci\'on}
+
+    \noindent Mi implementaci\'on la hice primero en c++ y despu\'es en python  . El c\'odigo  que probe en el CodeForce fue el de c++ .El c\'odigo de python lejos de estar mal porque es una traduccion exacta del codigo de c++ , pude que se vaya de tiempo 
+
+    \subsection{C\'odigo en c++ }
+
+    \noindent EL metodo \textit{solution()} es el que recorre a todas las aristas y devuelve la soluci\'on al problema , es c\'odigo es el de abajo: 
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = solution ]{cpp} 
+         void solution ()
+        {
+            int i , u , v ; 
+        
+            for (i=0 ; i < aristas.size(); i++) 
+            {
+                u = aristas[i].first ;
+                v = aristas[i].second;
+
+                if (checkEdge(u,v)) 
+                {
+                    printHydra(u,v);
+                    return ; 
+                }
+                else if (checkEdge(v,u)) 
+                {
+                    printHydra(v,u);
+                    return ;
+                }
+            }
+            cout << "NO" <<endl ; 
+        }       
+    \end{minted}
+
+    \noindent El m\'etodo \textit{chackEdge()} es el que analiza una arista para saber si puede se puede tomar a esta como el cuepo del hydra y formar los conjuntos 
+    \textit{head} , \textit{tail} , en caso de que no se pueda el array visistes los devuelve "l\'impio" (o sea todos los vertices quedan como no visitados ), el  c\'odigo es el de abajo
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = checkEdge ]{cpp}        
+        int checkEdge (int u , int v ) 
+        {
+            int deg_u = graph[u].size();   
+            int deg_v = graph[v].size();    
+            int count , i , a , ind_u , ind_v , commun; 
+          
+            if (deg_u < h+1 || deg_v < t+1)
+            {
+                return 0 ; 
+            }
+
+            if (deg_u >= h+t+1)
+            {
+                buildSets1(u,v); 
+                return 1 ;         
+            }
+            if (deg_v >= h+t+1)
+            {
+                buildSets2(u,v);   
+                return 1 ;        
+            }
+        
+            commun = vertexcomun(u,v);  
+            ind_u = deg_u -1 -commun ;  
+            ind_v = deg_v -1 -commun ;  
+        
+            if ( (h- ind_u + t - ind_v ) > commun) 
+            {
+                restorevisitedarray(u);  
+                return 0 ;      
+            }
+
+            buildSets3(u,v,commun); 
+            return 1 ;  
+        }
+
+    \end{minted}
+
+    \noindent el m\'etodo \textit{ buildSets1()}  \textit{ buildSets2()} \textit{ buildSets3()} son los  que se encargan de construir los conjuntos \textit{head} , \textit{tail} teniendo en consideraci\'on que es lo que hay que tener en cuenta para construir los conjuntos en dependencia de que caso estamos analizando 
+    \\*
+    Los c\'odigos los presento a continuaci\'on 
+    
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSets1 ]{cpp}
+        void buildSets1 (int u , int v)
+        {
+            int deg_u = graph[u].size(); 
+            int deg_v = graph[v].size(); 
+            int i , a ; 
+            for (i=0 ; i < deg_v ; i++)
+            {
+                if (tail.size() == t ) break;  
+                a = graph[v][i]; 
+                if (a == u ) continue ;     
+                visited[a] = true ;  
+                tail.push_back (a) ;   
+            }
+            for (i=0 ; i < deg_u ; i++)
+            {
+                if (head.size() == h )break; 
+                a = graph[u][i] ; 
+                if (visited[a] || a == v ) 
+                {
+                    continue ; 
+                }
+                head.push_back(a);  
+            }
+        }
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSets2 ]{cpp}
+        void buildSets2 (int u , int v)
+        {
+            int deg_u = graph[u].size(); 
+            int deg_v = graph[v].size(); 
+            int i , a ; 
+            for (i=0 ; i < deg_u ; i++)
+            {
+                if (head.size() ==h)break; 
+                a = graph[u][i]; 
+                if (a == v ) continue ; 
+                visited[a] = true ; 
+                head.push_back (a) ; 
+            }
+            for (i=0 ; i < deg_v ; i++)
+            {
+                if (tail.size() == t) break ;
+                a = graph[v][i] ; 
+                if (visited[a] || a == u ) continue ; 
+                tail.push_back(a); 
+            }
+        }
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSets3 ]{cpp}
+        void buildSets3 (int u , int v ,int commun ) 
+        {
+            int deg_u = graph[u].size();   
+            int deg_v = graph[v].size();   
+            int i , a ; 
+            int count = 0 ; 
+            for (i=0 ; i<deg_v ; i++)
+            {
+                if (tail.size() == t ) break; 
+                a = graph[v][i]; 
+                if (visited[a] && count < t - (deg_v-1 -commun) ) 
+                {
+                    count = count + 1 ; 
+                    visited[a] = false ; 
+                    tail.push_back(a);
+                }
+                else if (!visited[a] && a != u ) 
+                {
+                    tail.push_back(a);
+                }
+            }
+            for (i=0 ; i<deg_u ; i++)
+            {
+                if (head.size() == h) break; 
+                a = graph[u][i];
+                if (!visited[a]) continue;  
+                head.push_back(a);
+            }
+        }
+    \end{minted}
 
     
+
+    \noindent El c\'odigo en c++ presentado arriba esta en esta misma carpeta donde se encuentra el proyecto , el fichero se llamas \textit{hydra.cpp} , la complejidad temporal es la misma descrita arriba , las bibliotecas que usa son las estandares de c++ y por lo tanto la inserci\'on  y consulta del tamano de los array es $O\left(1\right)$
     
-    \usemintedstyle{solarized-dark}
-    \inputminted[bgcolor = bg ,frame = single , framerule = 3pt, framesep = 5pt , linenos = true ]{python} {../hydra.py}
+    \subsection{C\'odigo en Python} 
+
+    \noindent M\'etodo \textit{solution ()} 
     
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = solution ]{python}
+        def solution ():
+            for item in edges :  # recorre todas las aristas 
+                u , v = item[0] , item [1]
+
+                if checkEdge(u,v):
+                    printsolution(u,v)
+                    return 
+                elif checkEdge (v,u):
+                    printsolution(v,u)
+                    return 
+            print("NO")
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = checkEdge ]{python}
+        def checkEdge (u,v):
+            deg_u = len (graph[u])  # degree del vertice u 
+            deg_v = len (graph[v])  # degree del vertice v
+            
+            #Caso 1 
+            if deg_u < h+1 or deg_v < t+1:
+                return False 
+
+            #Caso 2
+            if deg_u >= h+t+1:
+                buildSet1(u,v)
+                return True
+            if deg_v > h+t+1:
+                buildSet2(u,v)
+                return True 
+            
+            #Caso 3 
+            commun = vertexcommun(u,v) 
+            ind_u = deg_u -1 - commun  
+            ind_v = deg_v -1 - commun   
+
+            if h - ind_u + t - ind_v > commun:  
+                restorevisitedarray(u)
+                return False 
+
+            buildSet3(u,v ,commun)
+            return True
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSet1 ]{python}
+        def buildSet1 (u,v):
+        deg_u = len (graph[u]) # degree del vertice u 
+        deg_v = len (graph[v]) # degree del vertice v
+
+        #determinar el tail 
+        i=0
+        while i < deg_v:
+            if len(tail) == t : break 
+            a = graph[v][i]
+            i = i + 1 
+            if a == u : continue 
+            visited[a] = True 
+            tail.append(a)
+
+        #determinar el head
+        i=0
+        while i < deg_u:
+            if len(head) == h : break
+            a = graph[u][i]
+            i = i +1 
+            if a == v  or visited[a]: continue 
+            head.append(a)
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSet2 ]{python}
+        def buildSet2 (u,v):
+            deg_u = len (graph[u]) 
+            deg_v = len (graph[v])
+            i=0 
+            while i  < deg_u:
+                if len(head) == h :break
+                a = graph[u][i]
+                i = i + 1 
+                if a == v : continue 
+                visited[a]= True 
+                head.append(a)
+            i=0 
+            while i < deg_v:
+                if len(tail) == t : break
+                a= graph[v][i]
+                i = i+1
+                if a == u or visited[a] : continue
+                tail.append(a)
+    \end{minted}
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg,frame = single ,linenos = true , label = buildSet3 ]{python}
+        def buildSet3 (u,v , commun):
+            deg_u = len (graph[u]) 
+            deg_v = len (graph[v]) 
+
+            count = 0 
+            i=0
+            while i < deg_v:
+                if len(tail) == t : break 
+                a = graph[v][i]
+                i = i + 1
+                if visited[a] and count < t - (deg_v-1 -commun):     
+                    count = count + 1
+                    visited[a] = False 
+                    tail.append(a)
+                elif visited[a] == False  and a != u :
+                    tail.append(a)
+            i=0 
+            while i < deg_u:
+                if len(head)==h : break 
+                a = graph[u][i]
+                i=i+1
+                if  visited[a] == False : continue 
+                head.append(a) 
+    \end{minted}
+
+    \noindent El c\'odigo de Python descrito arriba se encuentra completo en la carpeta de este informe en el fichero \textit{hydra.py} . en este c\'odigo no se usa ninguna estructura especial por lo que su complejidad temporal es la misma que la descrita arriba 
 \end{document}

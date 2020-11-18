@@ -4,6 +4,8 @@ head = []
 tail = [] 
 n,m,h,t,i = 0,0,0,0,0
 
+# esto es para determina los  
+# vertices en comun 
 def vertexcommun (u,v):
     count = 0 
     i=0
@@ -20,6 +22,8 @@ def vertexcommun (u,v):
             count = count +1 
     return count 
 
+# esto es prara poner todos los vertices de nuevo 
+# como que no ha side visitados
 def restorevisitedarray (u):
     i=0
     while i < len(graph[u]):
@@ -27,65 +31,68 @@ def restorevisitedarray (u):
         i = i + 1 
         visited [a] = False
 
-def solution (u,v):
-    deg_u = len (graph[u])
-    deg_v = len (graph[v])
-    
-    if deg_u < h+1 or deg_v < t+1:
-        return False 
+#esto es para determinar los subconjuntos 
+#acorde con el caso 2
+def buildSet1 (u,v):
+    deg_u = len (graph[u]) # degree del vertuce u 
+    deg_v = len (graph[v]) # degree del vertuce v
 
-    if deg_u >= h+t+1:
-        i=0
-        while i < deg_v:
-            if len(tail) == t : break 
-            a = graph[v][i]
-            i = i + 1 
-            if a == u : continue 
-            visited[a] = True 
-            tail.append(a)
-        i=0
-        while i < deg_u:
-            if len(head) == h : break
-            a = graph[u][i]
-            i = i +1 
-            if a == v  or visited[a]: continue 
-            head.append(a)
-        return True
+    #determinar el tail 
+    i=0
+    while i < deg_v:
+        if len(tail) == t : break 
+        a = graph[v][i]
+        i = i + 1 
+        if a == u : continue 
+        visited[a] = True 
+        tail.append(a)
 
-    if deg_v > h+t+1:
-        i=0 
-        while i  < deg_u:
-            if len(head) == h :break
-            a = graph[u][i]
-            i = i + 1 
-            if a == v : continue 
-            visited[a]= True 
-            head.append(a)
-        i=0 
-        while i < deg_v:
-            if len(tail) == t : break
-            a= graph[v][i]
-            i = i+1
-            if a == u or visited[a] : continue
-            tail.append(a)
-        return True 
-        
-    communvertex = vertexcommun(u,v)
-    ind_u = deg_u -1 - communvertex
-    ind_v = deg_v -1 - communvertex
+    #determinar el head
+    i=0
+    while i < deg_u:
+        if len(head) == h : break
+        a = graph[u][i]
+        i = i +1 
+        if a == v  or visited[a]: continue 
+        head.append(a)
 
-    if h - ind_u + t - ind_v > communvertex:
-        restorevisitedarray(u)
-        return False 
+#esto es para determinar los subconjuntos 
+#acorde con el otro subcaso del caso 2
+def buildSet2 (u,v):
+    deg_u = len (graph[u]) # degree del vertuce u 
+    deg_v = len (graph[v]) # degree del vertuce v
+    i=0 
+    while i  < deg_u:
+        if len(head) == h :break
+        a = graph[u][i]
+        i = i + 1 
+        if a == v : continue 
+        visited[a]= True 
+        head.append(a)
+    i=0 
+    while i < deg_v:
+        if len(tail) == t : break
+        a= graph[v][i]
+        i = i+1
+        if a == u or visited[a] : continue
+        tail.append(a)
 
-    countcommun = 0 
+#esto es para determinar los subconjuntos 
+#acorde con el caso 3
+def buildSet3 (u,v , commun):
+    deg_u = len (graph[u]) # degree del vertuce u 
+    deg_v = len (graph[v]) # degree del vertuce v
+
+    count = 0 
     i=0
     while i < deg_v:
         if len(tail) == t : break 
         a = graph[v][i]
         i = i + 1
-        if visited[a] and countcommun < t - ind_v:
-            countcommun = countcommun + 1
+        if visited[a] and count < t - (deg_v-1 -commun):    # para no escoger mas de los vertices que tiene en comun necesarios 
+                                                            # o sea no escoger de mas vertices que sean comunas a la hora de 
+                                                            # formar el tail  
+            count = count + 1
             visited[a] = False 
             tail.append(a)
         elif visited[a] == False  and a != u :
@@ -97,9 +104,37 @@ def solution (u,v):
         i=i+1
         if  visited[a] == False : continue 
         head.append(a)  
+
+def checkEdge (u,v):
+    deg_u = len (graph[u])  # degree del vertice u 
+    deg_v = len (graph[v])  # degree del vertice v
+    
+    #Caso 1 
+    if deg_u < h+1 or deg_v < t+1:
+        return False 
+
+    #Caso 2
+    if deg_u >= h+t+1:
+        buildSet1(u,v)
+        return True
+    if deg_v > h+t+1:
+        buildSet2(u,v)
+        return True 
+    
+    #Caso 3 
+    commun = vertexcommun(u,v)  #verties adyacentes a u y a v a la vez 
+    ind_u = deg_u -1 - commun   #vertices edyacentes a u que no son adyacentes a v
+    ind_v = deg_v -1 - commun   #vertices edyacentes a v que no son adyacentes a u
+
+    if h - ind_u + t - ind_v > commun:  #no hay vertices en comun suficientes 
+                                        #para armar los dos subconjuntos  
+        restorevisitedarray(u)
+        return False 
+
+    buildSet3(u,v ,commun)
     return True 
 
-
+# esto es para inicializar el grafo 
 def init (n):
     i =0 ; 
     while i < n:
@@ -116,6 +151,18 @@ def printsolution (u,v):
     for item in tail:
         print(str(item+1),end = ' ')
     print()
+
+def solution ():
+    for item in edges :  # recorre todas las aristas 
+        u , v = item[0] , item [1]
+
+        if checkEdge(u,v):
+            printsolution(u,v)
+            return 
+        elif checkEdge (v,u):
+            printsolution(v,u)
+            return 
+    print("NO")
 
 
 if __name__ == '__main__':
@@ -139,22 +186,4 @@ if __name__ == '__main__':
         graph[b-1].append(a-1)  
         i = i+1 
     
-    flag = False
-    for item in edges :
-        u , v = item[0] , item [1]
-
-        if solution(u,v):
-            printsolution(u,v)
-            flag = True
-            break 
-        elif solution(v,u):
-            printsolution(v,u)
-            flag = True
-            break 
-
-    if not flag : 
-        print("NO")
-
-        
-
-    
+    solution()

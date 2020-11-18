@@ -14,7 +14,7 @@ int n,m,h,t ;
 
 int vertexcomun (int u , int v )
 {
-    int communvertex = 0 ; 
+    int commun = 0 ; 
     int i , a ; 
     for (i=0 ; i< graph[u].size() ; i++)
     {
@@ -27,98 +27,95 @@ int vertexcomun (int u , int v )
         a = graph[v][i];
         if (visited[a])
         {
-            communvertex = communvertex + 1; 
+            commun = commun + 1; 
         }
     }
-    return communvertex;
+    return commun;
 } 
 
 void restorevisitedarray (int u )
 {
     int i , a ;
     for (i =0 ; i< graph[u].size() ; i++)
-        {
-            a = graph[u][i] ; 
-            visited[a] = false;
-        }
+    {
+        a = graph[u][i] ; 
+        visited[a] = false;
+    }
 } 
 
-int shortsolution (int u , int v ) 
+
+void buildSets1 (int u , int v)
 {
-    int deg_u = graph[u].size(); 
-    int deg_v = graph[v].size();
-    int count , i , a , communvertex; 
-
-    if (deg_u < h+1 || deg_v < t+1)
+    int deg_u = graph[u].size();  /* esto es el degree del vertice u*/
+    int deg_v = graph[v].size();  /* esto es el degree del vertice v*/
+    int i , a ;  /*varaibles necesarias */ 
+    for (i=0 ; i < deg_v ; i++)
     {
-        return 0 ; 
+        if (tail.size() == t ) break;  /* si el conjunto tail ya tiene todos los 
+                                        elementos entonces dejo de anadirle elementos /*/
+        a = graph[v][i]; 
+        if (a == u ) continue ;     /*si el vertice actual es u entonces no me interesa marcarlo */ 
+        visited[a] = true ;  /*marco el vertice como visitado */
+        tail.push_back (a) ;   /*lo anado a la cola */ 
     }
-
-
-
-    if (deg_u >= h+t+1)
+    for (i=0 ; i < deg_u ; i++)
     {
-        for (i=0 ; i < deg_v ; i++)
+        if (head.size() == h )break; /* si el conjunto tail ya tiene todos los 
+                                        elementos entonces dejo de anadirle elementos /*/
+        a = graph[u][i] ; 
+        if (visited[a] || a == v ) /*si el vertice actual es uno visitado (que ya se escogio para el tail )
+                                    o es el vertice v entonces no me interesa para formar parte del head 
+                                    por lo que continuo buscando a otros vertices */ 
         {
-            if (tail.size() == t ) break; 
-            a = graph[v][i]; 
-            if (a == u ) continue ;
-            visited[a] = true ; 
-            tail.push_back (a) ; 
+            continue ; 
         }
-        for (i=0 ; i < deg_u ; i++)
-        {
-            if (head.size() == h )break;
-            a = graph[u][i] ; 
-            if (visited[a] || a == v ) 
-            {
-                continue ; 
-            }
-            head.push_back(a); 
-        }
-        return 1 ; 
+        head.push_back(a);  /* si llege aqu\'i entonces anado el vertice al conjunto head */ 
     }
-    if (deg_v >= h+t+1)
+}
+
+void buildSets2 (int u , int v)
+{
+    int deg_u = graph[u].size();  /* esto es el degree del vertice u*/
+    int deg_v = graph[v].size();  /* esto es el degree del vertice v*/
+    int i , a ; 
+    for (i=0 ; i < deg_u ; i++)
     {
-        for (i=0 ; i < deg_u ; i++)
-        {
-            if (head.size() ==h)break; 
-            a = graph[u][i]; 
-            if (a == v ) continue ; 
-            visited[a] = true ; 
-            head.push_back (a) ; 
-        }
-        for (i=0 ; i < deg_v ; i++)
-        {
-            if (tail.size() == t) break ;
-            a = graph[v][i] ; 
-            if (visited[a] || a == u ) continue ; 
-            tail.push_back(a); 
-        }
-        return 1 ; 
+        if (head.size() ==h)break; 
+        a = graph[u][i]; 
+        if (a == v ) continue ; 
+        visited[a] = true ; 
+        head.push_back (a) ; 
     }
-   
-    communvertex = vertexcomun(u,v);
-
-    if ( (h-(deg_u -1 -communvertex) + t - (deg_v-1 - communvertex)) > communvertex)
+    for (i=0 ; i < deg_v ; i++)
     {
-        restorevisitedarray(u);
-        return 0 ; 
+        if (tail.size() == t) break ;
+        a = graph[v][i] ; 
+        if (visited[a] || a == u ) continue ; 
+        tail.push_back(a); 
     }
+}
 
-    int countcommun = 0 ; 
 
+void buildSets3 (int u , int v ,int commun ) 
+{
+    int deg_u = graph[u].size();    /* esto es el degree del vertice u*/
+    int deg_v = graph[v].size();    /* esto es el degree del vertice v*/
+    int i , a ; 
+    int count = 0 ; 
     for (i=0 ; i<deg_v ; i++)
     {
         if (tail.size() == t ) break; 
         a = graph[v][i]; 
-        if (visited[a] && countcommun < t - (deg_v-1 -communvertex) )
+        if (visited[a] && count < t - (deg_v-1 -commun) ) /*aqui si esta visitado el vertice entonces compruebo de que 
+                                                            si lo voy a escoger no sea un vertice escogido de forma inecesaria 
+                                                            porque si esta visitado es que es commun y solo quiero escoger la cantidad
+                                                            de vertices en comun necesarias (y no mas) de los vertice que son comunes*/
         {
-            countcommun = countcommun + 1 ; 
+            count = count + 1 ; 
             visited[a] = false ; 
             tail.push_back(a);
         }
-        else if (!visited[a] && a != u )
+        else if (!visited[a] && a != u ) /*si no esta visitado y el vertice es distunto de u entonces lo anado al conjunto tail */
         {
             tail.push_back(a);
         }
@@ -127,13 +124,65 @@ int shortsolution (int u , int v )
     {
         if (head.size() == h) break; 
         a = graph[u][i];
-        if (!visited[a]) continue; 
+        if (!visited[a]) continue;  /*minetras no este visitado , no me interesa */
         head.push_back(a);
     }
-    return 1 ; 
 }
 
-void printsolution (int u , int v)
+int checkEdge (int u , int v ) 
+{
+    int deg_u = graph[u].size();    /*cantidad de adyacentes que tiene el vertice u */
+    int deg_v = graph[v].size();    /*cantidad de adyacentes que tiene el vertice V */
+    int count , i , a , ind_u , ind_v , commun;  /*variables auxiliares */ 
+
+
+    /*CASO 1 -> No puede existir un Hydra con estas 
+    condicioes entonces el m\'etodo retorna false*/
+    if (deg_u < h+1 || deg_v < t+1)
+    {
+        return 0 ; 
+    }
+
+    /*CASO2 -> Es posible armar un Hydra*/
+    if (deg_u >= h+t+1)
+    {
+        buildSets1(u,v);    /*este metodo primero escoge los vertices del 
+                            conjunto tail y despues los del head*/
+
+        return 1 ;          /*el metodo termina y retorna verdadero */
+    }
+    if (deg_v >= h+t+1)
+    {
+        buildSets2(u,v);   /*este metodo primero escoge los vertices del 
+                            conjunto head y despues los del tail*/
+
+        return 1 ;         /*el metodo termina y retorna verdadero */
+    }
+   
+
+    /*CASO 3 -> Hay que ver si es posible armar un Hydra */
+
+    commun = vertexcomun(u,v);  /*cantidad de vertices que hay en comun 
+                                      (que son adyacentes a u y adyacentes a v )*/
+    ind_u = deg_u -1 -commun ;  /*cantidad de vertices adyacentes a u que no 
+                                      son adyacentes a v */
+    ind_v = deg_v -1 -commun ;  /*cantidad de vertices adyacentes a v que no 
+                                      son adyacentes a u */
+ 
+    if ( (h- ind_u + t - ind_v ) > commun) /*si la cantidad de vertices en comun no 
+                                            son suficientes para poder armar los conjuntos 
+                                            head y tail de forma tal que estos sean independientes*/
+    {
+        restorevisitedarray(u);   /*vuelvo a poner todos los adyacentes de u como no visitados */
+        return 0 ;       /* el metodo retorna falso porque no es posible formar los conjuntos que 
+                        estamos buscando */
+    }
+
+    buildSets3(u,v,commun); /*este metodo escoge los conjuntos head y tail */
+    return 1 ;  /*retorna verdadero */ 
+}
+
+void printHydra (int u , int v) /* aqui imprimo la salida en caso de que exista un Hydra */ 
 {
     cout << "YES" << endl; 
     cout << u + 1 << " " << v + 1  <<endl;
@@ -150,6 +199,29 @@ void printsolution (int u , int v)
     cout << endl ;
 } 
 
+void solution ()
+{
+    int i , u , v ; 
+   
+    for (i=0 ; i < aristas.size(); i++) /*recorro todas las aristas del grafo */
+    {
+        u = aristas[i].first ;
+        v = aristas[i].second;
+
+        if (checkEdge(u,v)) /* si en la arista u-v se pude armar el hydra entonces imprimo la solucion */
+        {
+            printHydra(u,v);
+            return ; 
+        }
+        else if (checkEdge(v,u)) /* si en la arista v-u se pude armar el hydra entonces imprimo la solucion */
+        {
+            printHydra(v,u);
+            return ;
+        }
+    }
+    cout << "NO" <<endl ; 
+}
+
 int main () {
     cin >> n >> m >> h >> t ;
     int a , b , i ;  
@@ -162,28 +234,6 @@ int main () {
         graph[a-1].push_back(b-1);
         graph[b-1].push_back(a-1);
     }
-    
-    int u , v ; 
-   
-    for (i=0 ; i < aristas.size(); i++)
-    {
-        u = aristas[i].first ;
-        v = aristas[i].second;
-
-        if (shortsolution(u,v))
-        {
-            printsolution(u,v);
-            return 0 ; 
-        }
-        else if (shortsolution(v,u))
-        {
-            printsolution(v,u);
-            return 0 ;
-        }
-    }
-
-    
-
-    cout << "NO" <<endl ; 
+    solution () ;
     return 0 ; 
 }

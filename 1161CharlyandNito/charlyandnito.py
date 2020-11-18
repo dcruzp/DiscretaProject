@@ -142,7 +142,6 @@ if __name__ == '__main__':
         if J == -1 and B == -1 and C ==-1 and N ==-1 and S ==-1:
             break 
 
-
         for v in range (J):
             g.agregarVertice(v)
 
@@ -153,7 +152,5 @@ if __name__ == '__main__':
             g.agregarArista(E1-1,E2-1,L)
             g.agregarArista(E2-1,E1-1,L)
             i = i + 1
-        
-        
 
         solucion() 

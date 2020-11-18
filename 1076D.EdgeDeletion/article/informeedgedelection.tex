@@ -1,0 +1,446 @@
+\documentclass[10pt]{article}  
+
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref} 
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{makeidx} 
+
+\definecolor {bg} {rgb}{0.95,0.95,0.95}
+
+\usetikzlibrary{positioning,arrows.meta}
+\usetikzlibrary{shapes,snakes}
+
+\begin{document}
+    \title{1076 - Edge Deletion}
+    \author{Daniel de la Cruz Prieto}
+    \date{\today}
+    \maketitle
+
+    \begin{abstract}
+        \noindent En este art\'iculo se hace un analisis completo , 
+        algoritmico para la solucion del ejercicio del Juez en 
+        l\'inea \href{https://codeforces.com}{\textcolor{blue}{CodeForce}} 
+        si quiere entrar directamente al link del problema 
+        \href{https://codeforces.com/problemset/problem/1076/D}{\textcolor{blue}{click aqui}} 
+        . En este articulo se muestra un analisis algoritmico , de tiempo y correctitud del 
+        algoritmo usado para resolver el problema 
+    \end{abstract}
+
+    \section*{Descripci\'on del Problema } 
+
+    \begin{flushleft}
+        Dado un grafo ponderado conectado y  no dirigido que consta de $n$ v\'ertices y $m$ aristas . Denotemos la longitud del camino m\'as corto desde el v\'ertice $1$ al v\'ertice $i$ como $d_i$.
+    \end{flushleft}
+
+    \begin{flushleft}
+       Tienes que borrar algunos vertices del grafo para que a lo sumo  $k$ aristar permanezcan en el grafo . Llamamos a un v\'ertice $i$ {\bf bueno} si todav\'ia existe un camino desde $1$ a $i$ con longitud $d_i$ despu\'es de borrar los v\'ertices .
+    \end{flushleft}
+
+    \begin{flushleft}
+        El objetivo es borrar los aristas de tal manera que se maximice el n\'umero de {\bf buenos} v\'ertices.
+    \end{flushleft}
+
+    \begin{flushleft}
+        {\bf Entrada}
+    \end{flushleft}
+
+    \begin{flushleft}
+       La primera l\'inea contiene tres enteros $n,m$ y $k$ ($2 \leq n \leq 3*10^5,1\leq m \leq 3*10^5,n-1\leq m,0\leq k \leq m$)-el n\'umero de v\'ertices y aristas en el gr\'afico y el n\'umero m\'aximo de aristas que se puedesn retener en el grafo, respectivamente.
+    \end{flushleft}
+
+    \begin{flushleft}
+        Entonces las siguientes $m$ l\'ineas, cada una con tres enteros $x,y,w$ ($1 \leq x,y \leq n,x \neq y,1\leq w \leq 10^9$),que denota una arista que conecta los v\'ertices $x$ y $y$ con peso $w$.
+    \end{flushleft}
+
+    \begin{flushleft}
+        El grafo dado es conexo (se puede llegar a cualquier v\'ertice desde cualquier otro v\'ertice) y simple(no hay lazos, y para cada par  de v\'ertices distintos existe como m\'aximo una arista que conecta estos v\'ertices).
+    \end{flushleft}
+
+    \begin{flushleft}
+        {\bf Salida}
+    \end{flushleft}
+
+    \begin{flushleft}
+        En la primera l\'inea de impresi\'on $e$ - el n\'umero de aristas que deben permanecer en el gr\'afico($0 \leq e \leq k$).  
+    \end{flushleft}
+
+    \begin{flushleft}
+        En la segunda l\'inea imprimir $e$ enteros {\bf distintos} de $1$ a $m$ - los indices de aristas que deben permanecer en el gr\'afico. Losaristas se numeran en el mismo orden en que se dan en la entrada. El n\'umero de buenos v\'ertices deber\'ia ser lo m\'as grande posible. 
+    \end{flushleft}
+
+    \noindent \textbf {Ejemplo de entrada } 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        3 3 2
+        1 2 1
+        3 2 1
+        1 3 3
+    \end{minted}
+    \noindent \textbf {Ejemplo de salida} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+        2
+        1 2
+    \end{minted}
+
+    \noindent \textbf {Ejemplo de entrada } 
+
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = INPUT] {console}
+        4 5 2
+        4 1 8
+        2 4 1
+        2 1 3
+        3 4 9
+        3 1 5
+    \end{minted}
+    \noindent \textbf {Ejemplo de salida} 
+    \begin{minted}[bgcolor = bg , frame = single , framerule = 1pt , framesep = 5pt , gobble = 8 , label = OUTPUT] {console}
+        2 
+        3 2 
+    \end{minted}
+
+    \section{Ideas para resolver el problema} 
+
+    \noindent Lo primero que se me ocurrio fue calcular el \'arbol de caminos m\'inimos que me genera el algoritmo de Dijkstra y despues ir eliminando las arista 
+    que me conectaban a las hojas del arbol hasta que el arbol resultante tuviera k o menos aristas .
+    Pero me en un analisis del algoritmo de Dijkstra se puede ver que cada vez que un v\'ertice es analizado este pasa a ser parte de un \'arbol donde sus v\'ertices estan conectados por exactamente un camino 
+    un camino minimo que tiene or\'igen en el v\'ertice donde se empezo a aplicar el algoritmo de Dijkstra .
+    \\*
+    Entonces podriamos utilizar el algoritmo de Dijkstra para encontrar este arbol y terminar el algoritmo una vez el arbol que me genera tenga m\'as de K aristas  
+
+    \section{Soluci\'on del Problema }
+
+    \noindent Vamos a aplicar el algoritmo de Dijkstra partiendo del vertice 0 y cuando el algoritmo haya procesado k+1 nodos entonces paramos el algoritmo
+
+    \vspace*{0.5cm}
+
+    \noindent \textbf{ ?` Porque esto funciona ?}
+
+    \noindent Cuando se aplica el algoritmo de Dijkstra este al sacar un nodo $v$ de la cola para ser procesado , este nodo no entra mas a la cola y queda establecido la distancia m\'inima desde el v\'ertice inicial (donde se empezo a aplicar el algoritmo ) hasta dicho nodo $v$, luego tambien queda establecido desde que nodo $u$ se llego y obtuvo su valor de $\delta \left(v\right)$ de foma tal que la arista $u \xrightarrow[]{e} v $ pasa a formar parte del \'arbol que va generando el algoritmo . La correctitus de todo esto esta dada por la correctitud del algoritmo de Dijkstra que unas secciones mas abajo se demustra
+
+    \subsection{Seudoc\'odigo del algoritmo } 
+
+    
+        %\caption{\textit{Dikjstra's algorithm modific}}
+        \begin{algorithmic}[1]      
+        \State $\lambda \left(s \right) \leftarrow 0 $
+        \State $Q \leftarrow \{s\}$
+        \State $P \leftarrow \emptyset $
+        \State $\pi \leftarrow  \{null \dots\}$ 
+        \State count $\leftarrow$ 0 
+
+        \While {$Q \neq \emptyset $ \textbf{and} $count \leq  k $ }
+                \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
+                \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
+                \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
+                \State count = count +1 
+                \ForAll {$v \xrightarrow[]{e} u$}
+                    \If {$u \in Q $}
+                        \If{$\lambda\left(u\right) > \lambda \left(v\right) + l \left(e\right)$ }
+                            \State $\lambda $ $\left(u\right)$ $\leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$ 
+                            \State $\pi \left[u\right]  \leftarrow v$
+                        \EndIf
+                        
+                    \Else
+                        \If {$u \notin P$} 
+                            \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
+                            \State $ Q \leftarrow  Q \cup \{u\}$
+                            \State $\pi \left[u\right]  \leftarrow v$
+                        \EndIf
+                    \EndIf 
+                \EndFor
+        \EndWhile 
+        \end{algorithmic}
+    
+        \vspace{0.5cm}
+
+    \noindent Este algoritmo es el mismo qie el algoritmo de Dijkstra solo que con unas pequenas modificaciones para poder depues establecer por el array $\pi$ cuales eran los antecedentes por los que un v\'ertice $u$ obtuvo su valor $\delta\left(u\right)$ 
+    \\*
+    Ademas de un contador para no procesar mas de k +1  nodos .
+
+    \subsection{Correctitud del algoritmo } 
+
+    \noindent La correctitud del algoritmo se basa en la correctitud del algoritmo de Dikjstra.
+    Cuando se demustra la correctitud del algoritmo de Dikjstra se demustra tambien que una vez que se establece el valor de $\delta\left(u\right)$ existe no cambia mas y existe una camino de l\'ongitud  $\delta\left(u\right)$ desde el v\'ertice donde se comenz\'o a aplicar Dijkstra hasta el v\'ertice $u$ por lo tanto el algoritmo es correcto 
+    \\*
+    Entonces como los v\'ertices que pasan a formar parte de $P$ para todos ellos existe un camino desde donde se comenz\'o a aplicar el algoritmo  hasta cada uno de los v\'ertices de $P$ , con demostrar que no existen ciclos  demostramos que lo que estamos construyendo es un \'arbol 
+    \\*
+    Pero cada v\'ertice que pasa a ser parte de $P$ tiene un unico antecesor y lo  que tenia hasta el momento era un arbol , por lo tanto sigue siendo un \'arbol  (cada vertice que pasa al conjunto P esta relacionado por una arista solamente con uno de los vertices de $P$ ),luego al anadir este v\'ertice no se me formaron ciclos por lo tanto sigue siendo un \'arbol
+    \\*
+    como lo que tengo es un arbol con los vertices del conjunto $P$ y el algoritmo se detiene una vez que $\vert P  \vert >= k+1$ entonces la cantidad de aristas que tengo es exactamente k (por ser un arbol ) , luego el algoritmo me da la solucion esperada 
+
+    \subsection{Complejidad temporal } 
+
+    \noindent La complejidad temporal esta dada por la complejidad temporal del algoritmo de Dikjstra , (en dependencia de como se programe en un lenguaje o en otro puede mejorar el tiempo ) , pero para el seudocodigo que hemos propuesto tenemos que la complejidad temporal del algoritmo es de $O \left(\vert V \vert^2  + \vert E \vert \right)$ 
+
+
+
+    \section{Algoritmo de Dijkstra}
+
+    \noindent El algoritmo de Dijkstra calcula la menor distancia desde un v\'ertice inicial hasta todos los dem\'as vertices del Grafo  
+
+    \subsection{Seudoc\'odigo del algoritmo de Dijkstra} 
+
+        \begin{algorithm}[H]
+            \caption{\textit{Dikjstra's algorithm}}
+            \begin{algorithmic}[1]      
+            \State $\lambda \left(s \right) \leftarrow 0 $
+            \State $Q \leftarrow \{s\}$
+            \State $P \leftarrow \emptyset $
+
+            \While {$Q \neq \emptyset $}
+                    \State \textbf{choose a vertex $v \in Q $ for which $\lambda \left(v\right)$ is minimum}
+                    \State $Q$ $\leftarrow$ $Q$ $\backslash$ $\{v\}$
+                    \State $P$ $\leftarrow$ $P$ $\cup$  $\{v\}$
+                    \ForAll {$<u,v>$}
+                        \If {$u \in Q $}
+                            \State $\lambda $ $\left(u\right)$ $\leftarrow $ \textbf{min} $\{ \lambda \left(u\right) , \lambda \left(v\right) + l \left(e\right)\}$ 
+                        \Else
+                            \If {$u \notin P$} 
+                                \State $\lambda\left(u\right)$ $ \leftarrow $ $ \lambda \left(v\right) + l \left(e\right)$
+                                \State $ Q \leftarrow  Q \cup \{u\}$
+                            \EndIf
+                        \EndIf 
+                    \EndFor
+            \EndWhile 
+            \end{algorithmic}
+        \end{algorithm}
+
+    
+    \subsection*{Lema 1}
+        \noindent  \textit{Cuando al algoritmo de Diskjstra se aplica sobre un grafo finito $G\left(V,E\right)$ este termina} 
+
+        \vspace{0.5cm} 
+        \noindent \textit{\textbf{Demostracion } }
+        \\*
+        \noindent Este algoritmo trabaja basicamente sobre la cola $Q$ de v\'ertices 
+        Cada v\'ertice $v$ entra a la cola $Q$ a lo sumo una vez , esto lo podemos ver claramente en la linea 14 donde primero se pregunta si el v\'ertice a incluir en 
+        la cola $Q \notin P $ .Aqui la relacion de los conjuntos $P$ y $Q$ es que una vez que un v\'ertice es escogido como el de menor "peso" este sale de la cola 
+        $Q$ y pasa a ser parte del conjunto $P$ . 
+        \\*
+        Luego una vez que un vertice es escogido en la linea 5 este sale inmediatamente de la cola $Q$ y entra en el conjunto $P$ . 
+        \\*
+        Luego un v\'ertice $v$ no puede entrar mas de una vez a $Q$ . por lo que una vez que la linea 5 se haya ejecutado $|V|$ veces el algoritmo termina su ejecuci\'on (donde $V$  es el conjunto de v\'ertices del grafo $G$)
+    
+    \subsection*{Lema 2} 
+        \noindent \textit{Durante la ejecuci\'on del algoritmo de Dijkstra cada v\'ertice accesible desde $s$ queda marcado , ($\lambda (v)$toma un valor) }
+        
+        \vspace{0.5cm}
+        \noindent \textit{\textbf{Demostraci\'on}}
+        \\*
+        Vamos a suponer que existe un v\'ertice $v$ que es accesible desde $s$
+        y que el valor de $\lambda\left(v\right)$ nunca cambia 
+        \\*
+        Como $v$ es accesible desde $s$ entonces existe un camino $\mathcal{P} $
+        que va de $s$ a $v$ . vamos a denotar a $u$ como el primer v\'ertice en 
+        el camino $\mathcal{P}$ para el cual el valor de $\lambda$ no cambio
+        durante la ejecucion del algoritmo . Y ahora vamos a denotar $w \xrightarrow[]{e} u$ 
+        tal que  $\lambda\left(w\right)$ cambio . Entonces en alg\'un punto de la 
+        ejecucion del algoritmo el v\'ertice $w$ fue procesado eventualmente para
+        salir de la cola $Q$ y con esto la arista $w \xrightarrow[]{e} u$  es procesada y por
+        lo tanto el valor de $\lambda\left(u\right)$ cambia 
+        \\*
+        Luego hemos encontrado una contradicci\'on , habiamos supuesto que 
+        $\lambda\left(u\right)$ nunca cambi\'o , pero hemos encontrado que en alg\'un 
+        punto de la ejecuci\'on del algoritmo su valor cambio 
+        \\*
+        Con esta proceso como $v$ esta en el camino $\mathcal{P}$ en alg\'un punto 
+        su valor cambia , poque sino entonces encontrariamos una contradiccion como 
+        la anterior . 
+        \\*
+        Luego si $v$ es accesible desde $s$ entonces al aplicar el algoritmo de Dijkstra
+        el valor de $\lambda\left(v\right)$ cambia.
+        
+    \subsection*{Lema 3}
+
+        \noindent \textit{En cualquier momento durante la ejecucion del algoritmo de Diskstra si 
+        para un vertice $v $ cambia  su valor de $\lambda\left(v\right)$ entonces existe 
+        un camino desde $s$ hasta $v$ cuya longitud es $\lambda\left(v\right)$}
+
+        \vspace{0.5cm}
+        \noindent\textit{\textbf{Demostraci\'on}}
+        \\*
+        Vamos a hacerlo por inducci\'on en el momento en que es modificado el valor de~$\lambda$
+        \\*
+        \noindent La primera asignaci\'on ocurre en la linea 1 , donde $\lambda\left(s\right)$ toma valor $0$ 
+        y en efecto podemos ver que existe un camino de longitud $0$ desde el v\'ertice $s$ hasta el propio 
+        v\'ertice  $s$ (un camino vac\'io ). 
+        \\*
+        Ahora en cada asignaci\'on o reasignaci\'on que se le hace a $\lambda$ en el momento $t$ 
+        y asumiendo que en todas las reasignaciones anteriores se cumple la hip\'otesis  . 
+        \\*
+        Vamos a asumir que a un v\'ertice $u$ su valor de $\lambda\left(u\right)$ cambia por primera vez . 
+        Entonces el valor asignado a $v$ fue antes del momento $t$  . 
+        \\*
+        Por hipotesis de inducci\'on existe un camino que va de $s$ a $v$ de longitud $\lambda\left(v\right)$. 
+        Si a ese camino le adicionamos la arista $u \xrightarrow[]{e} v $ entonces es un camino desde $s$ hasta $u$ 
+        de longitud $\lambda\left(u\right)$
+        \\[5pt] 
+        Para el caso en que el valor de $u$ es reasignado (o sea que no fue la primera vez que le es
+        asignado un valor a $\lambda\left(u\right)$ ) pudemos encontrar el camino de longitud
+        $\lambda\left(u\right)$ de la misma manera .
+        \\[5pt]
+        Vamos a denotar a $\delta \left(v\right)$ como la menor distancia de $s$ a $v$ entonces 
+        tenemos que: 
+        \begin{equation*}
+            \lambda\left(v\right) \geq \delta\left(v\right)
+        \end{equation*}
+
+        \vspace{1cm} 
+
+        \newtheorem{thm1}{Teorema}
+        \begin{thm1}
+            \textit{Cuando el algoritmo de Dijkstra termina para cada v\'ertice $v$ accesible desde $s$ se cumple  que : }
+        \end{thm1}
+
+        \begin{equation*}
+            \lambda\left(v\right) = \delta\left(v\right)
+        \end{equation*}
+
+        \noindent \textit{\textbf{Demostracion}}
+        \\* 
+        Si v es accesible desde $s$ entonces por lo demostrado 
+        anteriormente $\lambda\left(v\right) < \infty$  . Y por el lema 3  tenemos que  
+        $\lambda\left(v\right) \geq \delta\left(v\right)$  . Solo falta demostrar que 
+        $\lambda\left(v\right) \leq \delta\left(v\right)$
+        \\*
+        Vamos a hacer la demostraci\'on por inducci\'on en el orden en que los v\'ertices pasan 
+        al conjunto $P$ 
+        \\*
+        Vamos a denotar a $\mathcal{P}$ como un camino m\'inimo de $s$ a $v$ y Vamos a denotar 
+        a $t$ como el momento cuando el vertice $v$ es escogido para unirse al conjunto $P$ .
+        En este momento $t$ , el vertice $s$ esta en $P$ pero $v$ no lo esta . 
+        \\*
+        Pero debe existir una arista $u \xrightarrow[]{e}w $ en $\mathcal{P}$ tal que $u \in P $ pero 
+        $w \notin P$ 
+        \\* 
+        Como todas las aristas tienen peso positivo , el subcamino de $\mathcal{P}$ desde $w$ 
+        a $v$ tiene longitud positiva entonces : 
+        \begin{equation*}
+            \delta \left(v\right) \geq \delta\left(w\right)
+        \end{equation*}
+        Cada subcamino de un camino de longitud m\'inima es de longitud m\'inima . Entonces el 
+        subcamino de $\mathcal{P}$ que va desde $s$ hasta $w$  es de longitud m\'inima y su longitud 
+        esta dada por la longitud del camino de longitud m\'inima desde $s$ hasta $u$ mas el peso de la 
+        arista $e$ ($l\left(e\right)$) , esto es : 
+        \begin{equation*}
+            \delta\left(w\right) = \delta\left(u\right) + l\left(e\right)
+        \end{equation*}
+        Tenemos que $u$ se introdujo en $P$ antes del tiempo $t$ , por la hipotesis de induccion 
+        $\delta\left(u\right) \geq \lambda\left(u\right)$ .Entonces 
+        \begin{equation*}
+            \delta\left(u\right) + l\left(e\right) \geq \lambda\left(u\right) + l\left(e\right)
+        \end{equation*} 
+        Como $u$ entro en $P$ antes del tiempo $t$ todos sus adyacentes fueron examinados, incluyendo
+        a la arista $u \xrightarrow[]{e}w$ . Entonces en al momento $t$ , $\lambda\left(w\right)$ fue asignada y por 
+        lo tanto 
+        \begin{equation*}
+            \lambda\left(u\right) + l\left(e\right) \geq \lambda\left(w\right)
+        \end{equation*} 
+        Sin embargo , en el momento $t$ , $v$ ha sido el escogido para unirse a $P$ , no  $w$ . entonces : 
+        \begin{equation*}
+            \lambda\left(w\right) \geq \lambda\left(v\right)
+        \end{equation*}
+        Entonces podemos decir que todas las anteriores afirmaciones implican que en el momento $t$ 
+        \begin{equation*}
+            \delta\left(v\right) \geq \lambda\left(v\right)
+        \end{equation*}
+
+    \subsection{Complejidad Temporal }
+        \noindent Durante la ejecuci\'on del algoritmo de Dijkstra cada v\'ertice entra en $Q$ a lo sumo una vez y cada v\'ertice que entra en $Q$ sale 
+        una vez que es escogido en la linea 5 . Entonces la ejecuci\'on de la linea 5 se realiza a lo sumo $\vert V \vert$ veces por lo que su complejidad 
+        de ejecuci\'on toma $O\left(\vert V \vert\right)$ . La suma total del tiempo de ejecuci\'on de la linea 8 - 14 para cada v\'ertice escogido es de $O\left(\vert E \vert\right)$. 
+        No hay aristas examinadas m\'as de una vez . Esto quiere decir que el tiempo de ejecuci\'on del algoritmo de Dijkstra es de $O\left(\vert V \vert ^ 2 + \vert E \vert \right)$
+        
+    \section{Mi implementaci\'on }
+
+    Primero hice una implementacion en c++ y despues hice una en Python , la que probe en el CodeForce fue la implementaci\'on en c++ , La implementacion en python es una traduccion literal del codigo de c++ , lo que usa algunas bubliotecas del lenguaje que pueden hacer que el tiempo de ejecucion sea mayor
+    
+    \subsection{Implementacion en c++ } 
+
+    \noindent Algoritmo de  Dikjstra modificado 
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = dijkstra ]{cpp}
+        void dijkstra (int str , int k ) 
+        {
+            init(); 
+            distances[str] = 0 ; 
+            Q.insert(make_pair(0,str)); 
+
+            int count = 0; 
+            while (!Q.empty()&& count < k ) 
+            {
+                auto tmp = *Q.begin(); 
+                Q.erase(Q.begin());
+                int curr = tmp.second;
+                if (last[curr]!=-1)
+                {
+                    
+                    count = count + 1;
+                    answer.push_back(last[curr]); 
+                }
+                for (auto ady : graph[curr])
+                {
+                    int to = ady.first ; 
+                    int w = ady.second.first;
+                    int idx = ady.second.second; 
+
+                    
+                    if (distances[to] > distances[curr] + w)
+                    {
+                        Q.erase(make_pair(distances[to], to));
+                        distances[to] = distances[curr] + w ; 
+                        last[to] = idx; 
+                        Q.insert(make_pair(distances[to],to));
+                    } 
+                }
+            }
+        }
+    \end{minted}
+
+    \noindent El c\'odigo completo esta en la carpeta donde se encuentra este informe , el fichero se llama \textit{edgedelection.cpp}
+
+    \subsubsection{Complejidad temporal} 
+
+    \noindent En esta implementaci\'on $Q$ es una instancia de "set" de STL , donde en la documentaci\'on oficial dice que esto es una \'arbol binario balanceado por altura y por lo tanto la insercio eliminaci\'on y busqueda toman tiempo logaritmico , por lo tanto la complejidad temporal es del algoritmo que implemente es $O\left(\vert E \vert \cdot \log \left(V\right)\right)$  
+
+    \subsection{Implementacion en Python } 
+
+    \noindent Esta implementaci\'on esta basada sobre la biblioteca Queue que usa una cola de priorida , los tiempos de insercion toman tiempo logaritmicos , esto esta en la documentacion oficial de Python   . Pero laimplementacion hecha en python puede ser para casos muy  grandes ineficiente  , entonces  puede mejorarse el tiempo de ejecucion   , en cuanto a la correctitud es una traduccion del codigo de c++ descrito arriba el cual me dio acepted en el CodeForce 
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = dijkstra ]{Python}
+        def dijkstra (str , k):
+        init()
+        distances[str] = 0; 
+        priority_queue.put((0,str))
+
+        count =0 
+
+        while not priority_queue.empty() and count < k :
+            top = priority_queue.get()
+            actual = top[1]
+            vertice_actual = g.obtenerVertice(actual)
+            if visited[actual]: continue 
+            visited[actual] = True
+
+            if last[actual] != -1 :
+                count = count + 1
+                answer.append(last[actual]) 
+            for adyacente in vertice_actual.obtenerConexiones():
+                peso = vertice_actual.obtenerPonderacion(adyacente)
+                index = vertice_actual.obtenerIndex(adyacente) 
+
+                id_adyacent = adyacente.obtenerId()
+                if not visited[id_adyacent]:
+                    if distances[actual] + peso < distances[id_adyacent]:
+                        distances[id_adyacent] = distances[actual] + peso 
+                        priority_queue.put((distances[id_adyacent],id_adyacent))
+                        last[id_adyacent] = index;  
+    \end{minted}
+
+    \noindent El c\'odigo completo esta en la carpeta donde se encuentra este informe , el fichero es \textit{edgedelection.py} 
+\end{document}
+

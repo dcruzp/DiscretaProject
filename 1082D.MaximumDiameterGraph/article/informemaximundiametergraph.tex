@@ -139,6 +139,76 @@
         NO
     \end{minted}
 
+
+    \section{Ideas para resolver el Problema } 
+
+    \noindent Lo que se nos esta pidiendo en el problema es formar un grafo conexo , no dirigido donde el di\'ametro sea el mayor posible 
+    pero por el resultado visto en la primera conferencia , el menor grafo conexo que se puede armar es un \'arbol por lo que la suma de los degree tiene que ser mayor o igual  que $2\left(n+1\right)$  
+    \\*
+    multiplicamos por dos porque cada arista aporta un degree a cada vetice y como el grafo es no dirigido entonces cada arista aporta degree 2 a la suma total de degree del grafo que se quiere armar  
+
+    \vspace*{0.5cm}
+    Despues tendr\'imos que tratar de armar un grafo donde  el diametro fuera maximo 
+    \\*
+    Si se toman los vertices de grado mayor que uno y los unimos a todo en una dadena entonces estar\'iamos maximizando el diam\'etro . Si existen dos vertices de grado uno entonces los pongo a los extremos de la cadena que voy formando   
+    \noindent 
+
+
+    \section{Seudocodigo del Algoritmo } 
+
+    \begin{algorithm}[H]
+        \caption{\textit{Dikjstra's algorithm}}
+        \begin{algorithmic}[1]      
+        \State s $ \leftarrow$ 0 
+        
+        \While {$i < n $}
+                \State s = s + $a\left[i\right]$
+                \State i = i + 1 
+        \EndWhile 
+
+        \If{$s < 2\left(n-1\right)$}
+            \State \textbf{Print "NO"}
+            \State \textbf{Return}
+        \EndIf
+        \State i = 0 
+        \While{$i< n$}
+            \If{$a\left[i\right] = 1 $}
+                \State $a\left[i\right] = 0$
+                \State append $\left(ONES , i  \right)$
+                \State i = i + 1 
+            \EndIf 
+        \EndWhile
+
+        \State $t\leftarrow $ ONES.size ()
+        \State dm $\leftarrow$ $\left(n-t\right) - 1$ + \textbf{min} $\left(2,t\right)$
+        \State PRINT (YES +  dm + n - 1) 
+
+        \State l = -1 
+        \If{$ONES.size >0$}
+            \State $l$ = $ONES.popback()$
+        \EndIf
+        
+        \State $i = 0$
+        \While{$i < n $}
+            \If{$a\left[i\right] > 1 $}
+                \If{$l \neq -1$ }
+                    \State $a\left[l\right] = a\left[l\right]  -1  $
+                    \State $a\left[i\right] = a\left[i\right]  -1  $
+                \EndIf
+                \State l = i 
+            \EndIf
+        \EndWhile
+        \State $i = n-1$
+        \While{$i>=0$}
+            \While{\textbf{not } ONES.empty() \textbf{and } $a\left[i\right] > 0 $}
+                \State $a\left[i\right] = a\left[i\right] - 1 $
+                \State PRINT (i+1 , ONES.popback () + 1 )
+            \EndWhile
+            \State i = i - 1 
+        \EndWhile
+        \end{algorithmic}
+    \end{algorithm}
+
 \end{document}
 
 
