@@ -148,16 +148,23 @@
     multiplicamos por dos porque cada arista aporta un degree a cada vetice y como el grafo es no dirigido entonces cada arista aporta degree 2 a la suma total de degree del grafo que se quiere armar  
 
     \vspace*{0.5cm}
-    Despues tendr\'imos que tratar de armar un grafo donde  el diametro fuera maximo 
+    \noindent Despues tendr\'iamos que tratar de armar un grafo donde  el diametro fuera maximo 
     \\*
-    Si se toman los vertices de grado mayor que uno y los unimos a todo en una dadena entonces estar\'iamos maximizando el diam\'etro . Si existen dos vertices de grado uno entonces los pongo a los extremos de la cadena que voy formando   
+    Si se toman los vertices de grado mayor que uno y los unimos a todo en una dadena entonces estar\'iamos maximizando el diam\'etro . Si existen dos v\'ertices de grado uno entonces los pongo a los extremos de la cadena que voy formando  o si existe uno solo lo anado igual 
+    \\*
+    Ahora solo podemos anadir aristas , pero vemos que el di\'amotro no puede aumentar mas , solo puede disminuir a medida que aumente el n\'umero de aristas que vamos poninedo a la estructura formada  
     \noindent 
 
+    \section{Solucion del problema } 
+
+    \noindent Primero vamos a determinar si se puede armar el grafo , para esto recorremos las degree y comprobamos que la suma de estos sea mayor o igual $2\left(n-1\right)$
+    \\*
+    despu\'es armamos una cadena con los vertices cuyo degree es mayor que uno 
+    \\*
+    y despu\'es vamos colocando los vertices con degree uno de forma tal que el grafo no disminuya su di\'ametro 
 
     \section{Seudocodigo del Algoritmo } 
-
-    \begin{algorithm}[H]
-        \caption{\textit{Dikjstra's algorithm}}
+    
         \begin{algorithmic}[1]      
         \State s $ \leftarrow$ 0 
         
@@ -207,8 +214,127 @@
             \State i = i - 1 
         \EndWhile
         \end{algorithmic}
-    \end{algorithm}
+    
 
+    \subsection{Complejidad temporal} 
+    
+    \noindent El primer ciclo del algoritmo como recorre todos los vertices su complejidad temporal es $O \left(\vert V \vert \right)$ e igual pasa con los restantes ciclos del grafo por lo tanto el tiempo de ejecucion del algoritmo es $O \left(\vert V \vert \right)$
+
+
+    \section{Implementaci\'on }
+    \noindent Hice  dos implementaaciones , una en c++ y otra en Python , ambas me dieron acepted en el CodeForce 
+
+    \subsection{Codigo en c++ } 
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = solution ]{cpp}
+        void solution () 
+        {
+            int i,  t  , d , l ,s =0  ; 
+            for ( i =0 ; i < n ; i++) 
+            {
+                s = s + a[i]; 
+            }
+
+            if (s < 2*(n-1)) 
+            {
+                cout << "NO" << endl ; 
+                return; 
+            }
+
+            for (i =0 ; i< n ; i++)
+            {
+                if (a[i] == 1 )
+                {
+                    a[i] = 0; 
+                    Ones.push_back(i);
+                }
+            }
+
+
+            t = Ones.size(); 
+            d = (n-t) -1 + min(2,t) ; 
+
+            cout << "YES" << " " << d << endl << n-1 << endl ; 
+
+            l = -1 ; 
+            if (!Ones.empty())
+            {
+                l = Ones.back(); 
+                Ones.pop_back(); 
+            }
+
+            for (i = 0 ; i< n ; i++)
+            {
+                if (a[i] > 1 ) 
+                {
+                    if (l !=-1)
+                    {
+                        a[l] = a[l] - 1;
+                        a[i] = a[i] - 1;
+                        cout << l +1 << " " << i+1 << endl ;   
+                    }
+                    l = i ; 
+                }
+            }
+
+            for (i = n-1 ; i >=0 ; --i )
+            {
+                while (!Ones.empty() && a[i] > 0 ) 
+                {
+                    a[i] = a[i] - 1 ; 
+                    cout << i+1 << " " << Ones.back() + 1 << endl ; 
+                    Ones.pop_back();   
+                }
+            }    
+        }
+    \end{minted}
+
+
+    \subsection{C\'odigo en Python }
+
+    \begin{minted}[gobble = 8 , breaklines ,bgcolor = bg, linenos = true,frame = single, label = solution ]{python}
+        def solution ():
+            s = 0 
+            for item in a : 
+                s = s + item 
+            
+            if s < 2*(n-1) :
+                print("NO")
+                return
+            
+            for i in range(n): 
+                if a[i] == 1 :
+                    a[i] = 0 
+                    Ones.append(i)
+
+            t = len(Ones)
+            d = (n-t) - 1 + min(2,t)
+            print("YES " + str(d) + "\n" + str(n-1) )
+
+            l = -1 
+            if len(Ones) != 0 :  
+                l = Ones[len(Ones)-1]
+                Ones.remove(l)
+
+            for i in range (n): 
+                if a[i] > 1 :
+                    if l !=-1:
+                        a[l] = a[l] -1 
+                        a[i] = a[i] -1 
+                        print (str (l+1) + " " + str(i+1))
+                    l=i
+            
+            i = n-1  
+            while i >=0 :
+                while len(Ones) > 0 and a[i] > 0 :
+                    a[i] = a[i] -1 
+                    u = Ones[len(Ones)-1]
+                    print(str(i+1) + " " + str (u +1) )
+                    Ones.remove(u)
+                i = i -1 
+    \end{minted}
+
+    \noindent El codigo completo se encuentra en la misma carpeta en la que esta este art\'iculo , los ficheros son \textit{minimundiametergraph.cpp} y \textit{minimundiametergraph.py}
 \end{document}
 
 
